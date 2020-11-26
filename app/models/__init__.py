@@ -1,39 +1,32 @@
 from datetime import datetime
-from flask_sqlalchemy import Model
-import json
-import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.mutable import MutableDict
+from app import db
 
 
-class JSONEncodedDict(sa.types.TypeDecorator):
-    impl = sa.types.UnicodeText
+class Base(db.Document):
+    meta = {'allow_inheritance': True}
+    
+    _id = db.SequenceField(primary_key=True)
+    _creation_date = db.DateTimeField()
+    _modified_date = db.DateTimeField()
 
-    def process_bind_param(self, value, dialect):
-        if value is not None:
-            value = json.dumps(value)
-        return value
+    def save(self, *args, **kwargs):
+        timestamp = datetime.utcnow()
+        if not self._creation_date:
+            self._creation_date = timestamp
+        self._modified_date = timestamp
+        return super().save(*args, **kwargs)
 
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            value = json.loads(value)
-        return value
+    def to_dict(self, include_metadata=True):
+        result = {}
+        if include_metadata:
+            result.update(
+                {
+                    '_id': self._id,
+                    '_creation_date': '{}Z'.format(self._creation_date.isoformat('T')),
+                    '_modified_date': '{}Z'.format(self._modified_date.isoformat('T'))
+                }
+            )
+        return result
 
-
-JsonEncodedDict = MutableDict.as_mutable(JSONEncodedDict)
-
-
-class BaseModel(Model):
-    @declared_attr
-    def _id(cls):
-        for base in cls.__mro__[1:-1]:
-            if getattr(base, '__table__', None) is not None:
-                type = sa.ForeignKey(base.id)
-                break
-        else:
-            type = sa.Integer
-        return sa.Column(type, primary_key=True)
-
-    _created = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    _modified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-            
+    def __repr__(self):
+        return '<Base "{}">'.format(self._id)

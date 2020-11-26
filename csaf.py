@@ -1,4 +1,5 @@
-from app import create_app, db, ma
+from app import create_app, db
+from app.models.advisory import Advisory
 
 
 app = create_app()
@@ -8,5 +9,5 @@ app = create_app()
 def make_shell_context():
     return {
         'db': db,
-        'ma': ma
+        'Advisory': Advisory
     }
