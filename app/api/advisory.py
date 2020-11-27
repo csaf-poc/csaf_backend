@@ -8,6 +8,28 @@ from app.schemas.csaf import CSAFv2Schema
 
 @bp.route('/advisories', methods=['GET'])
 def list_advisories(endpoint='api.list_advisories', include_metadata=True):
+    """
+    List advisories.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: page
+            in: query
+            required: false
+            schema:
+                type: integer
+        -   name: per_page
+            in: query
+            required: false
+            schema:
+                type: integer
+    responses:
+        200:
+            description: Advisories
+        5xx:
+            description: Server error.
+    """
     # List advisories
     per_page = request.args.get('per_page', 10, type=int)
     page = request.args.get('page', 1, type=int)
@@ -17,14 +39,54 @@ def list_advisories(endpoint='api.list_advisories', include_metadata=True):
     response.status_code = 200
     return response
 
+
 @bp.route('/advisories/export', methods=['GET'])
 def export_advisories(endpoint='api.export_advisories'):
+    """
+    Export advisories in CSAF format.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: page
+            in: query
+            required: false
+            schema:
+                type: integer
+        -   name: per_page
+            in: query
+            required: false
+            schema:
+                type: integer
+    responses:
+        200:
+            description: Advisories
+        5xx:
+            description: Server error.
+    """
     return list_advisories(endpoint=endpoint, include_metadata=False)
 
 
 @bp.route('/advisories', methods=['POST'])
 @validate_schema(CSAFv2Schema)
 def create_advisory():
+    """
+    Create a new advisory.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: advisory
+            in: body
+            required: true
+            schema:
+                type: object
+    responses:
+        201:
+            description: Advisory created.
+        5xx:
+            description: Server error.
+    """
     # Load data
     data = request.get_json() or {}
     # Create new advisory
@@ -39,6 +101,25 @@ def create_advisory():
 
 @bp.route('/advisories/<int:uid>', methods=['GET'])
 def get_advisory(uid, include_metadata=True):
+    """
+    Get advisory with ID `uid`.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: integer
+    responses:
+        200:
+            description: Advisory with ID `uid`.
+        404:
+            description: Advisory with ID `uid` not found.
+        5xx:
+            description: Server error.
+    """
     # Get existing advisory
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
@@ -50,12 +131,55 @@ def get_advisory(uid, include_metadata=True):
 
 @bp.route('/advisories/<int:uid>/export', methods=['GET'])
 def export_advisory(uid):
+    """
+    Export advisory with ID `uid` in CSAF format.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: integer
+    responses:
+        200:
+            description: Advisory with ID `uid`.
+        404:
+            description: Advisory with ID `uid` not found.
+        5xx:
+            description: Server error.
+    """
     return get_advisory(uid, include_metadata=False)
 
 
 @bp.route('/advisories/<int:uid>', methods=['PUT'])
 @validate_schema(CSAFv2Schema)
 def update_advisory(uid):
+    """
+    Update advisory with ID `uid`.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: integer
+        -   name: advisory
+            in: body
+            required: true
+            schema:
+                type: object
+    responses:
+        200:
+            description: Advisory with ID `uid`.
+        404:
+            description: Advisory with ID `uid` not found.
+        5xx:
+            description: Server error.
+    """
     # Load data
     data = request.get_json() or {}
     # Update existing advisory
@@ -72,6 +196,25 @@ def update_advisory(uid):
 
 @bp.route('/advisories/<int:uid>', methods=['DELETE'])
 def delete_advisory(uid):
+    """
+    Delete advisory with ID `uid`.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: integer
+    responses:
+        204:
+            description: Advisory with ID `uid` deleted.
+        404:
+            description: Advisory with ID `uid` not found.
+        5xx:
+            description: Server error.
+    """
     # Delete existing advisory
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
