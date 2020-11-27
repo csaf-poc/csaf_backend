@@ -12,9 +12,9 @@ from app.schemas.csaf import CSAFv2Schema
 def create_advisory():
     # Load data
     data = request.get_json() or {}
-    # Create and save new advisory
+    # Create new advisory
     advisory = Advisory(**data)
-    advisory.save()
+    advisory.update_timestamps(created=True)
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 201
@@ -24,8 +24,10 @@ def create_advisory():
 
 @bp.route('/advisory/<int:uid>', methods=['GET'])
 def get_advisory(uid, include_metadata=True):
+    # Get existing advisory
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
+    advisory.update_timestamps(modified=False)
     response = jsonify(advisory.to_json(include_metadata=include_metadata))
     response.status_code = 200
     return response
@@ -41,11 +43,11 @@ def export_advisory(uid):
 def update_advisory(uid):
     # Load data
     data = request.get_json() or {}
-    # Update and save existing advisory
+    # Update existing advisory
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
     advisory.modify(**data)
-    advisory.save()
+    advisory.update_timestamps()
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 200
