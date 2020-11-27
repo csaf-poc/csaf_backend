@@ -16,7 +16,7 @@ class Base(db.Document):
         self._modified_date = timestamp
         return super().save(*args, **kwargs)
 
-    def to_dict(self, include_metadata=True):
+    def to_json(self, include_metadata=True):
         result = {}
         if include_metadata:
             result.update(

@@ -8,8 +8,8 @@ class Advisory(Base):
     product_tree = db.DictField()
     vulnerabilities = db.ListField()
 
-    def to_dict(self, include_metadata=True):
-        result = super().to_dict(include_metadata=include_metadata)
+    def to_json(self, include_metadata=True):
+        result = super().to_json(include_metadata=include_metadata)
         result.update(
             {
                 'document': self.document,
