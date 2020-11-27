@@ -44,6 +44,7 @@ class Base(db.Document):
         page = max(1, min(page, total_pages))
 
         bases = cls.objects.skip((page-1)* per_page).limit(per_page)
+        for base in bases: base.update_timestamps(modified=False)
         result = {
             '_items': [base.to_json(include_metadata=include_metadata) for base in bases],
             '_meta': {
