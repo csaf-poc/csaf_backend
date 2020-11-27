@@ -5,9 +5,24 @@ from app.api import validate_schema
 from app.models.advisory import Advisory
 from app.schemas.csaf import CSAFv2Schema
 
-# TODO: list_advisory
 
-@bp.route('/advisory', methods=['POST'])
+@bp.route('/advisories', methods=['GET'])
+def list_advisories(endpoint='api.list_advisories', include_metadata=True):
+    # List advisories
+    per_page = request.args.get('per_page', 10, type=int)
+    page = request.args.get('page', 1, type=int)
+    pagination = Advisory.paginate(page, per_page, endpoint, include_metadata=include_metadata)
+    # Return response
+    response = jsonify(pagination)
+    response.status_code = 200
+    return response
+
+@bp.route('/advisories/export', methods=['GET'])
+def export_advisories(endpoint='api.export_advisories'):
+    return list_advisories(endpoint=endpoint, include_metadata=False)
+
+
+@bp.route('/advisories', methods=['POST'])
 @validate_schema(CSAFv2Schema)
 def create_advisory():
     # Load data
@@ -22,7 +37,7 @@ def create_advisory():
     return response
 
 
-@bp.route('/advisory/<int:uid>', methods=['GET'])
+@bp.route('/advisories/<int:uid>', methods=['GET'])
 def get_advisory(uid, include_metadata=True):
     # Get existing advisory
     advisory = Advisory.objects(_id=uid).first()
@@ -33,12 +48,12 @@ def get_advisory(uid, include_metadata=True):
     return response
 
 
-@bp.route('/advisory/<int:uid>/export', methods=['GET'])
+@bp.route('/advisories/<int:uid>/export', methods=['GET'])
 def export_advisory(uid):
     return get_advisory(uid, include_metadata=False)
 
 
-@bp.route('/advisory/<int:uid>', methods=['PUT'])
+@bp.route('/advisories/<int:uid>', methods=['PUT'])
 @validate_schema(CSAFv2Schema)
 def update_advisory(uid):
     # Load data
@@ -55,7 +70,7 @@ def update_advisory(uid):
     return response
 
 
-@bp.route('/advisory/<int:uid>', methods=['DELETE'])
+@bp.route('/advisories/<int:uid>', methods=['DELETE'])
 def delete_advisory(uid):
     # Delete existing advisory
     advisory = Advisory.objects(_id=uid).first()
