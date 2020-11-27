@@ -5,6 +5,7 @@ from app.api import validate_schema
 from app.models.advisory import Advisory
 from app.schemas.csaf import CSAFv2Schema
 
+# TODO: list_advisory
 
 @bp.route('/advisory', methods=['POST'])
 @validate_schema(CSAFv2Schema)
@@ -50,4 +51,15 @@ def update_advisory(uid):
     response.status_code = 200
     response.headers['Location'] = url_for('api.get_advisory', uid=advisory._id)
     return response
-    
+
+
+@bp.route('/advisory/<int:uid>', methods=['DELETE'])
+def delete_advisory(uid):
+    # Delete existing advisory
+    advisory = Advisory.objects(_id=uid).first()
+    if advisory is None: abort(404, 'Advisory not found.')
+    advisory.delete()
+    # Return response
+    response = jsonify()
+    response.status_code = 204
+    return response
