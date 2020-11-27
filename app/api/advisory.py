@@ -1,24 +1,16 @@
 from flask import abort, jsonify, request, url_for
-from jsonschema.exceptions import ValidationError
 
 from app.api import bp
+from app.api import validate_schema
 from app.models.advisory import Advisory
-from app.schemas.csaf import CsafSchema
-from config import Config
-
-
-csaf_schema = CsafSchema(Config.CSAF_V2_SCHEMA)
+from app.schemas.csaf import CSAFv2Schema
 
 
 @bp.route('/advisory', methods=['POST'])
+@validate_schema(CSAFv2Schema)
 def create_advisory():
-    # Schema validation
-    data = request.get_json() or {}
-    try:
-        csaf_schema.validate(data)
-    except ValidationError as e:
-        abort(400, e.message)
     # Create and save new advisory
+    data = request.get_json() or {}
     advisory = Advisory(**data)
     advisory.save()
     # Return response

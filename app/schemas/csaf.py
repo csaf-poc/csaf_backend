@@ -1,11 +1,13 @@
-import json
 import jsonschema
 
-class CsafSchema:
+from app.schemas import AbstractJsonSchema
+from config import Config
 
-    def __init__(self, json_schema):
-        with open(json_schema) as json_file:
-            self.schema = json.load(json_file)
 
-    def validate(self, data):
-        jsonschema.validate(data, self.schema)
+class CSAFv2Schema(AbstractJsonSchema):
+
+    @staticmethod
+    def validate(data):
+        if CSAFv2Schema.schema is None:
+            CSAFv2Schema(Config.CSAF_V2_SCHEMA)
+        jsonschema.validate(data, CSAFv2Schema.schema)

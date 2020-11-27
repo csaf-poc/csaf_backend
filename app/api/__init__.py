@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify
+from flask import abort, Blueprint, jsonify, request
+from functools import wraps
+from jsonschema.exceptions import ValidationError
 from werkzeug.exceptions import HTTPException
 
 
@@ -30,6 +32,20 @@ def handle_http_exception(e):
     })
     response.status_code = e.code
     return response
+
+
+def validate_schema(schema):
+    def decorator(view):
+        @wraps(view)
+        def wrapped_view(*args, **kwargs):
+            data = request.get_json() or {}
+            try:
+                schema.validate(data)
+            except ValidationError as e:
+                abort(400, e.message)
+            return view(*args, **kwargs)
+        return wrapped_view
+    return decorator
 
 
 from app.api import advisory
