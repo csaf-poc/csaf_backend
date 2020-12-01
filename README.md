@@ -1,5 +1,5 @@
 # csaf
-## Test Setup
+### Test Setup
 Build appserver container image:
 ```
 $ cd csaf/
@@ -17,7 +17,7 @@ $ docker run --name csaf_appserver -d -p5000:5000 --rm \
     csaf_api:0.0.1
 $ docker container ls
 ```
-## Prod Setup
+### Prod Setup
 ```
 $ docker-compose up -d
 $ docker-compose down
