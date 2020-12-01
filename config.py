@@ -7,16 +7,16 @@ load_dotenv(path.join(basedir, '.env'))
 
 
 class Config:
+    # flask
     SECRET_KEY = environ.get('SECRET_KEY') or 'CHANGE-ME'
     SESSION_COOKIE_NAME = environ.get('SESSION_COOKIE_NAME') or 'session'
-
     # mongoengine
     MONGODB_DB = environ.get('MONGODB_DB') or 'csaf_advisory_db'
-    MONGODB_USERNAME = environ.get('MONGODB_USERNAME') or 'csaf_advisory_user'
-    MONGODB_PASSWORD = environ.get('MONGODB_PASSWORD') or 'CHANGE-ME'
+    MONGODB_USERNAME = environ.get('MONGODB_USERNAME') or None
+    MONGODB_PASSWORD = environ.get('MONGODB_PASSWORD') or None
     MONGODB_HOST = environ.get('MONGODB_HOST') or 'localhost'
     MONGODB_PORT = environ.get('MONGODB_PORT') or 27017
-    
+    # swagger
     CSAF_V2_SCHEMA = environ.get('CSAF_V2_SCHEMA') or path.join(basedir, 'app/schemas/csaf_json_schema.json')
     SWAGGER_CONFIG = {
         'headers': [],
