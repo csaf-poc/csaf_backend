@@ -1,25 +1,23 @@
 # csaf
-Build the container image:
+## Test Setup
+Build appserver container image:
 ```
-$ docker build -t csaf:latest .
-$ docker images
+$ cd csaf/
+$ docker build -t csaf_api:0.0.1 .
+$ docker image ls
 ```
-Start containers:
+Start database and appserver containers:
 ```
-$ docker run --name mongo -d -p27017:27017 mongo:latest
-$ docker run --name csaf -d -p 5000:5000 --rm \
-    -e SECRET_KEY=my-secret-key \
-    --link mongo:dbserver \
+$ docker run --name csaf_dbserver -d -p27017:27017 --rm \
+    mongo:4.2.2
+$ docker run --name csaf_appserver -d -p5000:5000 --rm \
+    --link csaf_dbserver:dbserver \
+    -e SECRET_KEY=CHANGE-ME \
     -e MONGODB_HOST=dbserver \
-    csaf:latest
-$ docker ps
+    csaf_api:0.0.1
+$ docker container ls
 ```
-```
-$ docker container logs csaf
-$ docker exec -it csaf sh
-```
-
-
+## Prod Setup
 ```
 $ docker-compose up -d
 $ docker-compose down
