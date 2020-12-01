@@ -1,5 +1,7 @@
 # csaf
 ### Test Setup
+The following steps can be used for testing the CSAF appserver. Note that the corresponding database is not persisted, and accesses performed by the DB root user.
+
 Build appserver container image:
 ```
 $ cd csaf/
