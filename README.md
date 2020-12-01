@@ -11,7 +11,7 @@ $ docker image ls
 Start database and appserver containers:
 ```
 $ docker run --name csaf_dbserver -d -p27017:27017 --rm \
-    mongo:4.2.2
+    mongo:4.4.2
 $ docker run --name csaf_appserver -d -p5000:5000 --rm \
     --link csaf_dbserver:dbserver \
     -e SECRET_KEY=CHANGE-ME \
