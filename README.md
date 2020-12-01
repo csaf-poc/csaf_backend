@@ -20,8 +20,3 @@ $ docker run --name csaf_appserver -d -p5000:5000 --rm \
 $ docker container ls
 ```
 ### Prod Setup
-```
-$ docker-compose up -d
-$ docker-compose down
-$ docker-compose down --volumes
-```
