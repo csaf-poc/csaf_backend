@@ -21,7 +21,12 @@ $ docker container ls
 ```
 ### Development Setup
 ```
+$ cd csaf_backend/
 $ docker run --name csaf_db -d -p27017:27017 --rm \
     mongo:4.4.2
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip install wheel, IPython
+$ pip install -r requirements.txt
 $ flask run --host=127.0.0.1
 ```
