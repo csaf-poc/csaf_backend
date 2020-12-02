@@ -23,5 +23,5 @@ $ docker container ls
 ```
 $ docker run --name csaf_db -d -p27017:27017 --rm \
     mongo:4.4.2
-$ flask run
+$ flask run --host=127.0.0.1
 ```
