@@ -19,7 +19,7 @@ $ docker run --name csaf_backend -d -p80:5000 --rm \
     csaf_flask:0.0.1
 $ docker container ls
 ```
-## Development Setup
+### Development Setup
 ```
 $ docker run --name csaf_db -d -p27017:27017 --rm \
     mongo:4.4.2
