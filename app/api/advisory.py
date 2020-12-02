@@ -223,3 +223,43 @@ def delete_advisory(uid):
     response = jsonify()
     response.status_code = 204
     return response
+
+
+@bp.route('/advisories/search', methods=['GET'])
+def search_advisories(include_metadata=True):
+    """
+    Search advisories.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: document_title
+            in: query
+            required: false
+            schema:
+                type: string
+        -   name: document_type
+            in: query
+            required: false
+            schema:
+                type: string
+    responses:
+        200:
+            description: First matching advisory.
+        404:
+            description: No matching advisory found.
+        5xx:
+            description: Server error.
+    """
+    document_title = request.args.get('document_title', None, type=str)
+    q_document_title = Q(document__title__icontains=document_title)
+    document_type = request.args.get('document_type', None, type=str)
+    q_document_type = Q(document__type__iexact=document_type)
+    # TODO: Return paginated response
+    advisory = Advisory.objects.filter(q_document_title or q_document_type).first()
+    if advisory is None: abort(404, 'No matching advisory found.')
+    advisory.update_timestamps(modified=False)
+    # Return response
+    response = jsonify(advisory.to_json(include_metadata=include_metadata))
+    response.status_code = 200
+    return response
