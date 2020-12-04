@@ -10,7 +10,7 @@ class AbstractJsonSchema(ABC):
             with open(json_file) as file:
                 AbstractJsonSchema.schema = json.load(file)
         else:
-            raise Exception('CSAFv2Schema is a singleton class.')
+            raise Exception('AbstractJsonSchema is a singleton class.')
 
     @abstractmethod
     def validate(self, data):
