@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "default": {},
+    "examples": [
+        {
+            "filters": [
+                {
+                    "field": "document__title",
+                    "op": "icontains",
+                    "value": "Document Title"
+                }
+            ],
+            "op": "and"
+        }
+    ],
+    "required": [
+        "filters"
+    ],
+    "type": "object",
+    "properties": {
+        "filters": {
+            "type": "array",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "field": "document__title",
+                        "op": "icontains",
+                        "value": "Document Title"
+                    }
+                ]
+            ],
+            "items": {
+                "type": "object",
+                "default": {},
+                "examples": [
+                    [
+                        {
+                            "field": "document__title",
+                            "op": "icontains",
+                            "value": "Document Title"
+                        }
+                    ]
+                ],
+                "required": [
+                    "field",
+                    "op",
+                    "value"
+                ],
+                "properties": {
+                    "field": {
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "document__title"
+                        ]
+                    },
+                    "op": {
+                        "default": "",
+                        "enum": [
+                            "exact",
+                            "iexact",
+                            "contains",
+                            "icontains",
+                            "startswith",
+                            "istartswith",
+                            "endswith",
+                            "iendswith",
+                            "match"
+                        ],
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "Document Title"
+                        ]
+                    }
+                }
+            }
+        },
+        "op": {
+            "default": "",
+            "enum": [
+                "and",
+                "or"
+            ],
+            "type": "string"
+        }
+    }
+}

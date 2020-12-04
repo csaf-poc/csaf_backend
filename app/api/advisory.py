@@ -1,9 +1,11 @@
 from flask import abort, jsonify, request, url_for
+from mongoengine.queryset.visitor import Q
 
 from app.api import bp
 from app.api import validate_schema
 from app.models.advisory import Advisory
 from app.schemas.csaf import CSAFv2Schema
+from app.schemas.filter import FilterSchema
 
 
 @bp.route('/advisories', methods=['GET'])
@@ -19,11 +21,13 @@ def list_advisories(endpoint='api.list_advisories', include_metadata=True):
             required: false
             schema:
                 type: integer
+                default: 1
         -   name: per_page
             in: query
             required: false
             schema:
                 type: integer
+                default: 10
     responses:
         200:
             description: Advisories
@@ -53,11 +57,13 @@ def export_advisories(endpoint='api.export_advisories'):
             required: false
             schema:
                 type: integer
+                default: 1
         -   name: per_page
             in: query
             required: false
             schema:
                 type: integer
+                default: 10
     responses:
         200:
             description: Advisories
@@ -76,11 +82,36 @@ def create_advisory():
     tags:
         - advisories
     parameters:
-        -   name: advisory
+        -   name: document
             in: body
             required: true
             schema:
                 type: object
+                default: {}
+                example: {
+                    "document":{
+                        "csaf_version":"2.0",
+                        "title":"Minimal Advisory",
+                        "publisher":{
+                            "type":"discoverer"
+                        },
+                        "type":"Example",
+                        "tracking":{
+                            "current_release_date":"2020-12-31",
+                            "id":"Example Document",
+                            "initial_release_date":"2020-12-31",
+                            "revision_history":[
+                                {
+                                    "number":"1",
+                                    "date":"2020-12-31",
+                                    "summary":"Summary of Example Advisory"
+                                }
+                            ],
+                            "status":"draft",
+                            "version":"1"
+                        }
+                    }
+                }
     responses:
         201:
             description: Advisory created.
@@ -172,6 +203,31 @@ def update_advisory(uid):
             required: true
             schema:
                 type: object
+                default: {}
+                example: {
+                    "document":{
+                        "csaf_version":"2.0",
+                        "title":"Minimal Advisory",
+                        "publisher":{
+                            "type":"discoverer"
+                        },
+                        "type":"Example",
+                        "tracking":{
+                            "current_release_date":"2020-12-31",
+                            "id":"Example Document",
+                            "initial_release_date":"2020-12-31",
+                            "revision_history":[
+                                {
+                                    "number":"1",
+                                    "date":"2020-12-31",
+                                    "summary":"Summary of Example Advisory"
+                                }
+                            ],
+                            "status":"draft",
+                            "version":"1"
+                        }
+                    }
+                }
     responses:
         200:
             description: Advisory with ID `uid`.
@@ -225,41 +281,68 @@ def delete_advisory(uid):
     return response
 
 
-@bp.route('/advisories/search', methods=['GET'])
+@bp.route('/advisories/search', methods=['POST'])
+@validate_schema(FilterSchema)
 def search_advisories(include_metadata=True):
     """
-    Search advisories.
+    Search advisories matching filtering criteria.
     ---
     tags:
         - advisories
     parameters:
-        -   name: document_title
+        -   name: limit
             in: query
             required: false
             schema:
-                type: string
-        -   name: document_type
-            in: query
-            required: false
+                type: integer
+                default: 10
+                minimum: 1
+                maximum: 1000
+        -   name: filters
+            in: body
+            required: true
             schema:
-                type: string
+                type: object
+                default: {}
+                example: {
+                    "filters": [
+                        {
+                            "field": "document__title",
+                            "op": "icontains",
+                            "value": "Document Title"
+                        }
+                    ],
+                    "op": "and"
+                }
     responses:
         200:
-            description: First matching advisory.
-        404:
-            description: No matching advisory found.
+            description: Matching advisories.
         5xx:
             description: Server error.
     """
-    document_title = request.args.get('document_title', None, type=str)
-    q_document_title = Q(document__title__icontains=document_title)
-    document_type = request.args.get('document_type', None, type=str)
-    q_document_type = Q(document__type__iexact=document_type)
-    # TODO: Return paginated response
-    advisory = Advisory.objects.filter(q_document_title or q_document_type).first()
-    if advisory is None: abort(404, 'No matching advisory found.')
-    advisory.update_timestamps(modified=False)
+    # Load data
+    data = request.get_json() or {}
+    filters = data.get('filters') or []
+    operator = data.get('op') or 'and'
+    # Build query
+    query = Q()
+    for f in filters:
+        q = {'{}__{}'.format(f['field'].strip('_'), f['op']): f['value']}
+        if operator == 'or':
+            query = query | Q(**q)
+        else:
+            query = query & Q(**q)
+    # Query objects
+    limit = request.args.get('limit', 10, type=int)
+    limit = max(1, min(limit, 1000))
+    try:
+        advisories = Advisory.objects[:limit].filter(query)
+    except Exception:
+        advisories = []
+    result = {
+        '_items': [advisory.to_json(include_metadata=include_metadata) for advisory in advisories]
+    }
     # Return response
-    response = jsonify(advisory.to_json(include_metadata=include_metadata))
+    response = jsonify(result)
     response.status_code = 200
     return response
