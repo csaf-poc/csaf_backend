@@ -327,7 +327,7 @@ def search_advisories(include_metadata=True):
     # Build query
     query = Q()
     for f in filters:
-        q = {'{}__{}'.format(f['field'].strip('_'), f['op']): f['value']}
+        q = {'{}__{}'.format(f['field'].lstrip('_'), f['op']): f['value']}
         if operator == 'or':
             query = query | Q(**q)
         else:
@@ -335,10 +335,7 @@ def search_advisories(include_metadata=True):
     # Query objects
     limit = request.args.get('limit', 10, type=int)
     limit = max(1, min(limit, 1000))
-    try:
-        advisories = Advisory.objects[:limit].filter(query)
-    except Exception:
-        advisories = []
+    advisories = Advisory.objects[:limit].filter(query)
     result = {
         '_items': [advisory.to_json(include_metadata=include_metadata) for advisory in advisories]
     }
