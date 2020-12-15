@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: csaf_flask:0.0.1
+        container_name: csaf_backend
+        restart: unless-stopped
+        depends_on:
+            - db
+        environment:
+            MONGODB_HOST: csaf_db
+        ports:
+            - "5000:5000"
+        networks:
+            - backend
+    db:
+        image: mongo:4.4.2
+        container_name: csaf_db
+        restart: unless-stopped
+        networks:
+            - backend
+networks:
+    backend:
+        driver: bridge
