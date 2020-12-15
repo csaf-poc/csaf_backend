@@ -23,12 +23,12 @@ class Config:
         'specs': [
             {
                 'endpoint': 'api',
-                'route': '/csaf_api.json',
+                'route': '/api/csaf_api.json',
                 "rule_filter": lambda rule: True,
                 "model_filter": lambda tag: True,
             }
         ],
-        'static_url_path': '/flasgger_static',
+        'static_url_path': '/api/flasgger_static',
         'swagger-ui': True,
         'specs_route': '/api/specs/'
     }
