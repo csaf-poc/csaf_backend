@@ -11,7 +11,7 @@ $ docker-compose -f docker-compose.test.yml ps
     csaf_db        docker-entrypoint.sh mongod   Up      27017/tcp
 $ docker-compose -f docker-compose.test.yml down
 ```
-
+### TODO: Remove
 
 
 Build image:
