@@ -16,4 +16,4 @@ class CSAFv2Schema:
     @staticmethod
     def validate(data):
         if CSAFv2Schema.schema is None: CSAFv2Schema()
-        jsonschema.validate(data, CSAFv2Schema.schema)
+        jsonschema.validate(data, CSAFv2Schema.schema, format_checker=jsonschema.draft7_format_checker)
