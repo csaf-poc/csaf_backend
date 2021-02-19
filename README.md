@@ -35,7 +35,7 @@ $ docker container ls
 ### Development Setup
 ```
 $ cd csaf_backend/
-$ docker run --name csaf_db -d -p27017:27017 --rm \
+$ docker run --name csaf_db -d -p127.0.0.1:27017:27017 --rm \
     mongo:4.4.2
 $ python3 -m venv venv
 $ source venv/bin/activate
