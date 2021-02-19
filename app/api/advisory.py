@@ -97,13 +97,13 @@ def create_advisory():
                         },
                         "type":"Example",
                         "tracking":{
-                            "current_release_date":"2020-12-31",
+                            "current_release_date":"2020-12-31T00:00:00Z",
                             "id":"Example Document",
-                            "initial_release_date":"2020-12-31",
+                            "initial_release_date":"2020-12-31T00:00:00Z",
                             "revision_history":[
                                 {
                                     "number":"1",
-                                    "date":"2020-12-31",
+                                    "date":"2020-12-31T00:00:00Z",
                                     "summary":"Summary of Example Advisory"
                                 }
                             ],
@@ -213,13 +213,13 @@ def update_advisory(uid):
                         },
                         "type":"Example",
                         "tracking":{
-                            "current_release_date":"2020-12-31",
+                            "current_release_date":"2020-12-31T00:00:00Z",
                             "id":"Example Document",
-                            "initial_release_date":"2020-12-31",
+                            "initial_release_date":"2020-12-31T00:00:00Z",
                             "revision_history":[
                                 {
                                     "number":"1",
-                                    "date":"2020-12-31",
+                                    "date":"2020-12-31T00:00:00Z",
                                     "summary":"Summary of Example Advisory"
                                 }
                             ],
