@@ -11,11 +11,11 @@ class Config:
     SECRET_KEY = environ.get('SECRET_KEY') or 'CHANGE-ME'
     SESSION_COOKIE_NAME = environ.get('SESSION_COOKIE_NAME') or 'session'
     # mongoengine
-    MONGODB_DB = environ.get('MONGODB_DB') or 'csaf_advisory_db'
-    MONGODB_USERNAME = environ.get('MONGODB_USERNAME') or None
-    MONGODB_PASSWORD = environ.get('MONGODB_PASSWORD') or None
-    MONGODB_HOST = environ.get('MONGODB_HOST') or 'localhost'
-    MONGODB_PORT = environ.get('MONGODB_PORT') or 27017
+    MONGODB_DB = environ.get('MONGODB_DB', 'csaf_advisory_db') 
+    MONGODB_USERNAME = environ.get('MONGODB_USERNAME', None)
+    MONGODB_PASSWORD = environ.get('MONGODB_PASSWORD', None)
+    MONGODB_HOST = environ.get('MONGODB_HOST', 'localhost')
+    MONGODB_PORT = int(environ.get('MONGODB_PORT', 27017))
     # swagger
     CSAF_V2_SCHEMA = environ.get('CSAF_V2_SCHEMA') or path.join(basedir, 'app/schemas/csaf_json_schema.json')
     SWAGGER_CONFIG = {
