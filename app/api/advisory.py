@@ -241,9 +241,9 @@ def update_advisory(uid):
     # Update existing advisory
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
-    advisory.modify(**data)
-    advisory.update_version()
+    advisory.update_version(**data)
     advisory.update_timestamps()
+    advisory.modify(**data)
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 200
