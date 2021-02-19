@@ -242,6 +242,7 @@ def update_advisory(uid):
     advisory = Advisory.objects(_id=uid).first()
     if advisory is None: abort(404, 'Advisory not found.')
     advisory.modify(**data)
+    advisory.update_version()
     advisory.update_timestamps()
     # Return response
     response = jsonify(advisory.to_json())

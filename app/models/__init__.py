@@ -9,9 +9,14 @@ class Base(db.Document):
     meta = {'allow_inheritance': True}
     
     _id = db.SequenceField(primary_key=True)
+    _version = db.SequenceField()
     _creation_date = db.DateTimeField()
     _modified_date = db.DateTimeField()
     _accessed_date = db.DateTimeField()
+
+    def update_version(self):
+        self._version += 1
+        self.save()
 
     def update_timestamps(self, created=False, modified=True, accessed=True):
         timestamp = datetime.utcnow()
@@ -29,6 +34,7 @@ class Base(db.Document):
             result.update(
                 {
                     '_id': self._id,
+                    '_version': self._version,
                     '_creation_date': '{}Z'.format(self._creation_date.isoformat('T')),
                     '_modified_date': '{}Z'.format(self._modified_date.isoformat('T')),
                     '_accessed_date': '{}Z'.format(self._accessed_date.isoformat('T'))
