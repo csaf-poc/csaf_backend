@@ -3,6 +3,10 @@ from app.models import Base
 
 
 class Advisory(Base):
+    meta = {
+        'collection': 'advisories'
+    }
+    
     document = db.DictField()
     product_tree = db.DictField()
     vulnerabilities = db.ListField()

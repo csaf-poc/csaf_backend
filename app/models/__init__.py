@@ -7,23 +7,15 @@ from app import db
 
 
 class Base(db.Document):
-    meta = {'allow_inheritance': True}
+    meta = {
+        'abstract': True
+    }
     
     _id = db.SequenceField(primary_key=True)
     _version = db.SequenceField()
     _creation_date = db.DateTimeField()
     _modified_date = db.DateTimeField()
     _accessed_date = db.DateTimeField()
-
-    def update_version(self, **update):
-        old = self.to_json(include_metadata=False)
-        new = self.__class__(**update).to_json(include_metadata=False)
-        diff = DeepDiff(old, new, ignore_order=True, report_repetition=True)
-        if diff:
-            # TODO: Store diff
-            print('Diff:', diff)
-            self._version += 1
-            self.save()
 
     def update_timestamps(self, created=False, modified=True, accessed=True):
         timestamp = datetime.utcnow()
@@ -34,6 +26,16 @@ class Base(db.Document):
         if accessed:
             self._accessed_date = timestamp
         self.save()
+
+    def update_version(self, **update):
+        old = self.to_json(include_metadata=False)
+        new = self.__class__(**update).to_json(include_metadata=False)
+        diff = DeepDiff(old, new, ignore_order=True, report_repetition=True)
+        if diff:
+            # TODO: Store diff
+            print('Diff:', diff)
+            self._version += 1
+            self.save()
 
     def to_json(self, include_metadata=True):
         result = {}
