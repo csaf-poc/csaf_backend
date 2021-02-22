@@ -121,16 +121,15 @@ def create_advisory():
     # Load data
     data = request.get_json() or {}
     # Create new advisory
-    advisory = Advisory(**data)
-    advisory.update_timestamps(created=True)
+    advisory = Advisory(init=True, **data)
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 201
-    response.headers['Location'] = url_for('api.get_advisory', uid=advisory._id)
+    response.headers['Location'] = url_for('api.get_advisory', uid=str(advisory.id))
     return response
 
 
-@bp.route('/advisories/<int:uid>', methods=['GET'])
+@bp.route('/advisories/<string:uid>', methods=['GET'])
 def get_advisory(uid, include_metadata=True):
     """
     Get advisory with ID `uid`.
@@ -142,7 +141,7 @@ def get_advisory(uid, include_metadata=True):
             in: path
             required: true
             schema:
-                type: integer
+                type: string
     responses:
         200:
             description: Advisory with ID `uid`.
@@ -152,15 +151,14 @@ def get_advisory(uid, include_metadata=True):
             description: Server error.
     """
     # Get existing advisory
-    advisory = Advisory.objects(_id=uid).first()
+    advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
-    advisory.update_timestamps(modified=False)
     response = jsonify(advisory.to_json(include_metadata=include_metadata))
     response.status_code = 200
     return response
 
 
-@bp.route('/advisories/<int:uid>/export', methods=['GET'])
+@bp.route('/advisories/<string:uid>/export', methods=['GET'])
 def export_advisory(uid):
     """
     Export advisory with ID `uid` in CSAF format.
@@ -172,7 +170,7 @@ def export_advisory(uid):
             in: path
             required: true
             schema:
-                type: integer
+                type: string
     responses:
         200:
             description: Advisory with ID `uid`.
