@@ -4,6 +4,7 @@ from mongoengine.queryset.visitor import Q
 from app.api import bp
 from app.api import validate_schema
 from app.models.advisory import Advisory
+from app.models.audit_trail import AuditRecord
 from app.schemas.csaf import CSAFv2Schema
 from app.schemas.filter import FilterSchema
 
@@ -121,7 +122,14 @@ def create_advisory():
     # Load data
     data = request.get_json() or {}
     # Create new advisory
-    advisory = Advisory(init=True, **data)
+    advisory = Advisory(**data)
+    advisory.save()
+    # Create new audit record
+    audit_record = AuditRecord(advisory, {}, data)
+    audit_record.save()
+    # Link audit record to advisory
+    advisory._audit_trail.append(audit_record)
+    advisory.save()
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 201
@@ -182,7 +190,7 @@ def export_advisory(uid):
     return get_advisory(uid, include_metadata=False)
 
 
-@bp.route('/advisories/<int:uid>', methods=['PUT'])
+@bp.route('/advisories/<string:uid>', methods=['PUT'])
 @validate_schema(CSAFv2Schema)
 def update_advisory(uid):
     """
@@ -195,7 +203,7 @@ def update_advisory(uid):
             in: path
             required: true
             schema:
-                type: integer
+                type: string
         -   name: advisory
             in: body
             required: true
@@ -236,20 +244,26 @@ def update_advisory(uid):
     """
     # Load data
     data = request.get_json() or {}
-    # Update existing advisory
-    advisory = Advisory.objects(_id=uid).first()
+    # Get existing advisory
+    advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
-    advisory.update_version(**data)
-    advisory.update_timestamps()
+    old_data = advisory.to_json(include_metadata=False)
+    # Update advisory
     advisory.modify(**data)
+    # Create new audit record
+    audit_record = AuditRecord(advisory, old_data, data)
+    audit_record.save()
+    # Link audit record to advisory
+    advisory._audit_trail.append(audit_record)
+    advisory.save()
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 200
-    response.headers['Location'] = url_for('api.get_advisory', uid=advisory._id)
+    response.headers['Location'] = url_for('api.get_advisory', uid=str(advisory.id))
     return response
 
 
-@bp.route('/advisories/<int:uid>', methods=['DELETE'])
+@bp.route('/advisories/<string:uid>', methods=['DELETE'])
 def delete_advisory(uid):
     """
     Delete advisory with ID `uid`.
@@ -261,7 +275,7 @@ def delete_advisory(uid):
             in: path
             required: true
             schema:
-                type: integer
+                type: string
     responses:
         204:
             description: Advisory with ID `uid` deleted.
@@ -270,10 +284,15 @@ def delete_advisory(uid):
         5xx:
             description: Server error.
     """
-    # Delete existing advisory
-    advisory = Advisory.objects(_id=uid).first()
+    # Get existing advisory
+    advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
+    old_data = advisory.to_json(include_metadata=False)
+    # Delete advisory
     advisory.delete()
+    # Create new audit record
+    audit_record = AuditRecord(advisory, old_data, {})
+    audit_record.save()
     # Return response
     response = jsonify()
     response.status_code = 204
@@ -339,6 +358,38 @@ def search_advisories(include_metadata=True):
         '_items': [advisory.to_json(include_metadata=include_metadata) for advisory in advisories]
     }
     # Return response
+    response = jsonify(result)
+    response.status_code = 200
+    return response
+
+
+@bp.route('/advisories/<string:uid>/trail', methods=['GET'])
+def get_audit_trail(uid, include_metadata=True):
+    """
+    Get audit trail of advisory with ID `uid`.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: string
+    responses:
+        200:
+            description: Audit trail of advisory with ID `uid`.
+        404:
+            description: Advisory with ID `uid` not found.
+        5xx:
+            description: Server error.
+    """
+    # Get existing advisory
+    advisory = Advisory.get(uid)
+    if advisory is None: abort(404, 'Advisory not found.')
+    result = {
+        '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in advisory._audit_trail]
+    }
     response = jsonify(result)
     response.status_code = 200
     return response
