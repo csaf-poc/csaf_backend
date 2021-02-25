@@ -15,11 +15,6 @@ class Base(db.Document):
     _modified_date = db.ComplexDateTimeField()
     _accessed_date = db.ComplexDateTimeField()
 
-##    def __init__(self, init=False, *args, **kwargs):
-##        super().__init__(*args, **kwargs)
-##        if init:
-##            self._update_timestamps(created=True)
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         timestamp = datetime.utcnow()
@@ -29,6 +24,10 @@ class Base(db.Document):
 
     def __repr__(self):
         return '<Base "{}">'.format('TODO: self.id')
+
+    def modify(self, query=None, **update):
+        version = self._version + 1
+        return super().modify(_version=version, query=query, **update)
 
 ##    def modify(self, **update):
 ##        self.save()
