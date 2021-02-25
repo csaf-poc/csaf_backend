@@ -7,7 +7,7 @@ class Advisory(Base):
         'collection': 'advisories'
     }
 
-    _audit_trail = db.ListField(db.ReferenceField(AuditRecord))
+    _audit_records = db.ListField(db.ReferenceField(AuditRecord))
 
     document = db.DictField()
     product_tree = db.DictField()
