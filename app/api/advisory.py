@@ -128,7 +128,7 @@ def create_advisory():
     audit_record = AuditRecord(advisory, {}, data)
     audit_record.save()
     # Link audit record to advisory
-    advisory._audit_trail.append(audit_record)
+    advisory._audit_records.append(audit_record)
     advisory.save()
     # Return response
     response = jsonify(advisory.to_json())
@@ -254,7 +254,7 @@ def update_advisory(uid):
     audit_record = AuditRecord(advisory, old_data, data)
     audit_record.save()
     # Link audit record to advisory
-    advisory._audit_trail.append(audit_record)
+    advisory._audit_records.append(audit_record)
     advisory.save()
     # Return response
     response = jsonify(advisory.to_json())
@@ -388,7 +388,7 @@ def get_audit_trail(uid, include_metadata=True):
     advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
     result = {
-        '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in advisory._audit_trail]
+        '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in advisory._audit_records]
     }
     response = jsonify(result)
     response.status_code = 200
