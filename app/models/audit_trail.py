@@ -27,6 +27,7 @@ class AuditRecord(Base):
         if include_metadata:
             result.update(
                 {
+                    '_ref': str(self._ref.id),
                     '_diff': self._diff
                 }
             )
