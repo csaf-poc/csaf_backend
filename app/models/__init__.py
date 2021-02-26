@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import url_for
 import math
 from mongoengine.queryset import queryset_manager
+import re
 
 from app import db
 
@@ -38,10 +39,8 @@ class Base(db.Document):
 
     @classmethod
     def get(cls, oid):
-        try:
-            result = cls.objects(id=oid).first()
-        except:
-            result = None
+        if re.fullmatch(r'[A-Fa-f0-9]{24}', oid) is None: return None
+        result = cls.objects(id=oid).first()
         if result: result._update_timestamps(modified=False)
         return result
 
@@ -83,15 +82,10 @@ class Base(db.Document):
         return result
 
     @classmethod
-    def search(self, query, limit=10):
-        objs = self.objects[:limit].filter(query)
+    def search(cls, query, limit=10):
+        objs = cls.objects[:limit].filter(query)
         for obj in objs: obj._update_timestamps(modified=False)
         return objs
-
-##    @queryset_manager
-##    def search(doc_cls, queryset, query):
-##        import IPython; IPython.embed()
-##        queryset.
 
     def modify(self, query=None, **update):
         result = super().modify(_version=self._version+1, query=query, **update)
