@@ -362,7 +362,7 @@ def search_advisories(include_metadata=True):
     # Query objects
     limit = request.args.get('limit', 10, type=int)
     limit = max(1, min(limit, 1000))
-    advisories = Advisory.objects[:limit].filter(query)
+    advisories = Advisory.search(query, limit)
     result = {
         '_items': [advisory.to_json(include_metadata=include_metadata) for advisory in advisories]
     }
@@ -373,7 +373,7 @@ def search_advisories(include_metadata=True):
 
 
 @bp.route('/advisories/<string:uid>/trail', methods=['GET'])
-def get_audit_trail(uid, include_metadata=True):
+def audit_trail(uid, include_metadata=True):
     """
     Get audit trail of advisory with ID `uid`.
     ---

@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import url_for
 import math
+from mongoengine.queryset import queryset_manager
 
 from app import db
 
@@ -11,27 +12,29 @@ class Base(db.Document):
     }
 
     _version = db.IntField(min_value=0, default=0)
-    _creation_date = db.ComplexDateTimeField()
-    _modified_date = db.ComplexDateTimeField()
-    _accessed_date = db.ComplexDateTimeField()
+    _creation_date = db.ComplexDateTimeField(default=datetime.utcnow)
+    _modified_date = db.ComplexDateTimeField(default=datetime.utcnow)
+    _accessed_date = db.ComplexDateTimeField(default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        timestamp = datetime.utcnow()
-        self._creation_date = timestamp
-        self._modified_date = timestamp
-        self._accessed_date = timestamp
+##        timestamp = datetime.utcnow()
+##        self._creation_date = timestamp
+##        self._modified_date = timestamp
+##        self._accessed_date = timestamp
 
     def __repr__(self):
         return '<Base "{}">'.format('TODO: self.id')
 
-    def modify(self, query=None, **update):
-        version = self._version + 1
-        return super().modify(_version=version, query=query, **update)
-
-##    def modify(self, **update):
-##        self.save()
-##        return super().modify(**update)
+    def _update_timestamps(self, created=False, modified=True, accessed=True):
+        timestamp = datetime.utcnow()
+        if created:
+            self._creation_date = timestamp
+        if modified:
+            self._modified_date = timestamp
+        if accessed:
+            self._accessed_date = timestamp
+        self.save()
 
     @classmethod
     def get(cls, oid):
@@ -78,25 +81,32 @@ class Base(db.Document):
             }
         }
         return result
+
+    @classmethod
+    def search(self, query, limit=10):
+        objs = self.objects[:limit].filter(query)
+        for obj in objs: obj._update_timestamps(modified=False)
+        return objs
+
+##    @queryset_manager
+##    def search(doc_cls, queryset, query):
+##        import IPython; IPython.embed()
+##        queryset.
+
+    def modify(self, query=None, **update):
+        result = super().modify(_version=self._version+1, query=query, **update)
+        # TODO: Test
+        self._update_timestamps()
+        return result
     
 ##    def update(self, **data):
 ##        self.modify(**data)
 ##        self._update_version()
 ##        self._update_timestamps()
 
-    def _update_version(self):
-        self._version += 1
-        self.save()
-            
-    def _update_timestamps(self, created=False, modified=True, accessed=True):
-        timestamp = datetime.utcnow()
-        if created:
-            self._creation_date = timestamp
-        if modified:
-            self._modified_date = timestamp
-        if accessed:
-            self._accessed_date = timestamp
-        self.save()
+##    def _update_version(self):
+##        self._version += 1
+##        self.save()
 
     def to_json(self, include_metadata=True):
         result = {}
