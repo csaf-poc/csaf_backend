@@ -26,7 +26,26 @@ class Advisory(Base):
             }
         )
         return result
-        
+
+    @classmethod
+    def create(cls, **data):
+        # Create and save new advisory
+        advisory = cls().save()
+        initial_data = advisory.to_json(include_metadata=False)
+        # Create and save new audit record
+        audit_record = AuditRecord(advisory, initial_data, initial_data).save()
+        # Link audit record to advisory
+        advisory._audit_records.append(audit_record)
+        advisory.save()
+        # Update advisory
+        advisory.modify(**data)
+        updated_data = advisory.to_json(include_metadata=False)
+        # Create and save updated audit record
+        audit_record = AuditRecord(advisory, initial_data, updated_data).save()
+        # Link audit record to advisory
+        advisory._audit_records.append(audit_record)
+        advisory.save()
+        return advisory
     
 
 ##class NewAdvisory(Base):

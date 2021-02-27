@@ -121,24 +121,8 @@ def create_advisory():
     """
     # Load data
     data = request.get_json() or {}
-    # Create an empty advisory
-    advisory = Advisory()
-    advisory.save()
-    # Create initial audit record
-    audit_record = AuditRecord(advisory, {}, {})
-    audit_record.save()
-    # Link initial audit record to advisory
-    advisory._audit_records.append(audit_record)
-    advisory.save()
-    # Update advisory
-    old_data = advisory.to_json(include_metadata=False)
-    advisory.modify(**data)
-    # Create new audit record
-    audit_record = AuditRecord(advisory, old_data, data)
-    audit_record.save()
-    # Link audit record to advisory
-    advisory._audit_records.append(audit_record)
-    advisory.save()
+    # Create advisory
+    advisory = Advisory.create(**data)
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 201
