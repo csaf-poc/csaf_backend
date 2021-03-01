@@ -17,13 +17,6 @@ class Base(db.Document):
     _modified_date = db.ComplexDateTimeField(default=datetime.utcnow)
     _accessed_date = db.ComplexDateTimeField(default=datetime.utcnow)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-##        timestamp = datetime.utcnow()
-##        self._creation_date = timestamp
-##        self._modified_date = timestamp
-##        self._accessed_date = timestamp
-
     def __repr__(self):
         return '<Base "{}">'.format('TODO: self.id')
 
@@ -89,18 +82,12 @@ class Base(db.Document):
 
     def modify(self, query=None, **update):
         result = super().modify(_version=self._version+1, query=query, **update)
-        # TODO: Test
         self._update_timestamps()
         return result
-    
-##    def update(self, **data):
-##        self.modify(**data)
-##        self._update_version()
-##        self._update_timestamps()
 
-##    def _update_version(self):
-##        self._version += 1
-##        self.save()
+    def delete(self, signal_kwargs=None, **write_concern):
+        self._version += 1
+        super().delete(signal_kwargs=signal_kwargs, **write_concern)
 
     def to_json(self, include_metadata=True):
         result = {}

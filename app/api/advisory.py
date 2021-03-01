@@ -122,7 +122,8 @@ def create_advisory():
     # Load data
     data = request.get_json() or {}
     # Create advisory
-    advisory = Advisory.create(**data)
+    advisory = Advisory()
+    advisory.initialize(**data)
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 201
@@ -240,15 +241,8 @@ def update_advisory(uid):
     # Get existing advisory
     advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
-    old_data = advisory.to_json(include_metadata=False)
     # Update advisory
     advisory.modify(**data)
-    # Create new audit record
-    audit_record = AuditRecord(advisory, old_data, data)
-    audit_record.save()
-    # Link audit record to advisory
-    advisory._audit_records.append(audit_record)
-    advisory.save()
     # Return response
     response = jsonify(advisory.to_json())
     response.status_code = 200
@@ -280,12 +274,8 @@ def delete_advisory(uid):
     # Get existing advisory
     advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
-    old_data = advisory.to_json(include_metadata=False)
     # Delete advisory
     advisory.delete()
-    # Create new audit record
-    audit_record = AuditRecord(advisory, old_data, {})
-    audit_record.save()
     # Return response
     response = jsonify()
     response.status_code = 204
@@ -377,12 +367,13 @@ def audit_trail(uid, include_metadata=True):
         5xx:
             description: Server error.
     """
-    # Get existing advisory
-    advisory = Advisory.get(uid)
-    if advisory is None: abort(404, 'Advisory not found.')
+    # Get audit trail of advisory
+    audit_records = AuditRecord.get(uid)
+    if audit_records.count() <= 0: abort(404, 'Advisory not found.')
     result = {
-        '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in advisory._audit_records]
+        '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in audit_records]
     }
+    # Return response
     response = jsonify(result)
     response.status_code = 200
     return response

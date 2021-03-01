@@ -16,6 +16,35 @@ class Advisory(Base):
     def __repr__(self):
         return '<Advisory "{}">'.format(self.document.get('tracking', {}).get('id', 'Unknown'))
 
+    def initialize(self, **data):
+        # Save initial advisory
+        initial_data = self.save().to_json(include_metadata=False)
+        # Create and save new audit record
+        audit_record = AuditRecord(self, initial_data, initial_data).save()
+        # Link audit record to advisory
+        self._audit_records.append(audit_record)
+        self.save()
+        # Update advisory
+        self.modify(**data)
+
+    def modify(self, query=None, **update):
+        # Modify advisory
+        old_data = self.to_json(include_metadata=False)
+        result = super().modify(query=query, **update)
+        new_data = self.to_json(include_metadata=False)
+        # Create and save new audit record
+        audit_record = AuditRecord(self, old_data, new_data).save()
+        # Link audit record to advisory
+        self._audit_records.append(audit_record)
+        self.save()
+        return result
+
+    def delete(self, signal_kwargs=None, **write_concern):
+        old_data = self.to_json(include_metadata=False)
+        super().delete(signal_kwargs=signal_kwargs, **write_concern)
+        audit_record = AuditRecord(self, old_data, {})
+        audit_record.save()
+
     def to_json(self, include_metadata=True):
         result = super().to_json(include_metadata=include_metadata)
         result.update(
@@ -26,122 +55,3 @@ class Advisory(Base):
             }
         )
         return result
-
-    @classmethod
-    def create(cls, **data):
-        # Create and save new advisory
-        advisory = cls().save()
-        initial_data = advisory.to_json(include_metadata=False)
-        # Create and save new audit record
-        audit_record = AuditRecord(advisory, initial_data, initial_data).save()
-        # Link audit record to advisory
-        advisory._audit_records.append(audit_record)
-        advisory.save()
-        # Update advisory
-        advisory.modify(**data)
-        updated_data = advisory.to_json(include_metadata=False)
-        # Create and save updated audit record
-        audit_record = AuditRecord(advisory, initial_data, updated_data).save()
-        # Link audit record to advisory
-        advisory._audit_records.append(audit_record)
-        advisory.save()
-        return advisory
-    
-
-##class NewAdvisory(Base):
-##    meta = {
-##        'collection': 'new_advisories'
-##    }
-##
-##    _audit_trail = db.ListField()
-##    
-##    document = db.DictField()
-##    product_tree = db.DictField()
-##    vulnerabilities = db.ListField()
-##
-##    def __init__(self, *args, **kwargs):
-##        super().__init__(*args, **kwargs)
-##
-##    def __repr__(self):
-##        return '<Advisory "{}">'.format(self.document.get('tracking', {}).get('id', 'Unknown'))
-##
-##    def modify(self, query=None, **update):
-##        old = self.save().to_json(include_metadata=False)
-##        record = AuditRecord(self, old, update)
-##        record.save()
-##        self._audit_trail.append(record)
-####        import IPython; IPython.embed()
-##        self.save()
-##        return super().modify(query=query, **update)
-##        
-##
-####    def modify(self, **update):
-####        self.save()
-####        old = self.to_json(include_metadata=False)
-######        result = super().modify(**update)
-####        record = AuditRecord(self, old, update)
-####        record.save()
-####        self._audit_trail.append(record)
-######        import IPython; IPython.embed()
-####        return super().modify(**update)
-##
-##    def to_json(self, include_metadata=True):
-##        result = super().to_json(include_metadata=include_metadata)
-##        if include_metadata:
-##            result.update(
-##                {
-##                    '_audit_trail': self._audit_trail
-##                }
-##            )
-##        result.update(
-##            {
-##                'document': self.document,
-##                'product_tree': self.product_tree,
-##                'vulnerabilities': self.vulnerabilities
-##            }
-##        )
-##        return result
-
-
-##class Advisory(Base):
-##    meta = {
-##        'collection': 'advisories'
-##    }
-##    
-##    document = db.DictField()
-##    product_tree = db.DictField()
-##    vulnerabilities = db.ListField()
-##
-##    # TODO: Save not within __init__()
-##    def __init__(self, init=False, **data):
-##        super().__init__(init=init, **data)
-##        if init:
-##            AuditTrail(self, {}, data)
-##            NewAuditTrail(_ref=self).save()
-##
-##    def __repr__(self):
-##        return '<Advisory "{}">'.format(self.document.get('tracking', {}).get('id', 'Unknown'))
-##
-##    def update(self, **data):
-##        old = self.to_json(include_metadata=False)
-##        super().update(**data)
-##        new = self.to_json(include_metadata=False)
-##        AuditTrail(self, old, new)
-##
-##    def delete(self, signal_kwargs=None, **write_concern):
-##        old = self.to_json(include_metadata=False)
-##        self._version += 1
-##        self.save()
-##        AuditTrail(self, old, {})
-##        super().delete(signal_kwargs=signal_kwargs, **write_concern)
-##
-##    def to_json(self, include_metadata=True):
-##        result = super().to_json(include_metadata=include_metadata)
-##        result.update(
-##            {
-##                'document': self.document,
-##                'product_tree': self.product_tree,
-##                'vulnerabilities': self.vulnerabilities
-##            }
-##        )
-##        return result
