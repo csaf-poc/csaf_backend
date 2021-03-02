@@ -369,7 +369,7 @@ def audit_trail(uid, include_metadata=True):
     """
     # Get audit trail of advisory
     audit_records = AuditRecord.get(uid)
-    if audit_records.count() <= 0: abort(404, 'Advisory not found.')
+    if len(audit_records) <= 0: abort(404, 'Advisory not found.')
     result = {
         '_items': [audit_record.to_json(include_metadata=include_metadata) for audit_record in audit_records]
     }
