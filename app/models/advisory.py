@@ -47,11 +47,7 @@ class Advisory(Base):
 
     def to_json(self, include_metadata=True):
         result = super().to_json(include_metadata=include_metadata)
-        result.update(
-            {
-                'document': self.document,
-                'product_tree': self.product_tree,
-                'vulnerabilities': self.vulnerabilities
-            }
-        )
+        if self.document: result.update({'document': self.document})
+        if self.product_tree: result.update({'product_tree': self.product_tree})
+        if self.vulnerabilities: result.update({'vulnerabilities': self.vulnerabilities})
         return result
