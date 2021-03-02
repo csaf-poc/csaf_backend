@@ -39,7 +39,7 @@ class Base(db.Document):
 
     @classmethod
     def paginate(cls, page, per_page, endpoint, include_metadata=True):
-        total_items = cls.objects.count()
+        total_items = len(cls.objects)
         per_page = max(1, min(per_page, total_items))
         total_pages = math.ceil(total_items/per_page)
         page = max(1, min(page, total_pages))
