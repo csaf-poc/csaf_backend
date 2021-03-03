@@ -283,6 +283,56 @@ def delete_advisory(uid):
     return response
 
 
+@bp.route('/advisories/<string:uid>/restore/v<int:vid>', methods=['GET'])
+def restore_advisory(uid, vid, include_metadata=False):
+    """
+    Restore version `vid` of the advisory with ID `uid`.
+    ---
+    tags:
+        - advisories
+    parameters:
+        -   name: uid
+            in: path
+            required: true
+            schema:
+                type: string
+        -   name: vid
+            in: path
+            required: true
+            schema:
+                type: integer
+    responses:
+        200:
+            description: Advisory with ID `uid` in version `vid`.
+        404:
+            description: Advisory with ID `uid` not found or invalid version `vid`.
+        5xx:
+            description: Server error.
+    """
+    # Get advisory and corresponding audit trail
+    audit_records = AuditRecord.get(uid)
+    if len(audit_records) <= 0: abort(404, 'Advisory not found.')
+    advisory = Advisory.get(uid)
+    # Restore deleted advisory
+    if advisory is None:
+        if vid <= 0 or vid >= len(audit_records)-1: abort(404, 'Invalid advisory version.')
+        restored_advisory = {}
+        for audit_record in list(audit_records)[1:vid+1]:
+            restored_advisory = patch(audit_record['_diff'], restored_advisory)
+        advisory = Advisory(**restored_advisory)
+    # Restore older advisory version
+    else:
+        if vid <= 0 or vid >= advisory._version: abort(404, 'Invalid advisory version')
+        restored_advisory = {}
+        for audit_record in list(audit_records)[1:vid+1]:
+            restored_advisory = patch(audit_record['_diff'], restored_advisory)
+        advisory = Advisory(**restored_advisory)
+    # Return response
+    response = jsonify(advisory.to_json(include_metadata=include_metadata))
+    response.status_code = 200
+    return response
+
+
 @bp.route('/advisories/search', methods=['POST'])
 @validate_schema(FilterSchema)
 def search_advisories(include_metadata=True):
@@ -343,56 +393,6 @@ def search_advisories(include_metadata=True):
     }
     # Return response
     response = jsonify(result)
-    response.status_code = 200
-    return response
-
-
-@bp.route('/advisories/<string:uid>/restore/v<int:vid>', methods=['GET'])
-def restore_advisory(uid, vid, include_metadata=False):
-    """
-    Restore version `vid` of the advisory with ID `uid`.
-    ---
-    tags:
-        - advisories
-    parameters:
-        -   name: uid
-            in: path
-            required: true
-            schema:
-                type: string
-        -   name: vid
-            in: path
-            required: true
-            schema:
-                type: integer
-    responses:
-        200:
-            description: Advisory with ID `uid` in version `vid`.
-        404:
-            description: Advisory with ID `uid` not found or invalid version `vid`.
-        5xx:
-            description: Server error.
-    """
-    # Get advisory and corresponding audit trail
-    audit_records = AuditRecord.get(uid)
-    if len(audit_records) <= 0: abort(404, 'Advisory not found.')
-    advisory = Advisory.get(uid)
-    # Restore deleted advisory
-    if advisory is None:
-        if vid <= 0 or vid >= len(audit_records)-1: abort(404, 'Invalid advisory version.')
-        restored_advisory = {}
-        for audit_record in list(audit_records)[1:vid+1]:
-            restored_advisory = patch(audit_record['_diff'], restored_advisory)
-        advisory = Advisory(**restored_advisory)
-    # Restore older advisory version
-    else:
-        if vid <= 0 or vid >= advisory._version: abort(404, 'Invalid advisory version')
-        restored_advisory = {}
-        for audit_record in list(audit_records)[1:vid+1]:
-            restored_advisory = patch(audit_record['_diff'], restored_advisory)
-        advisory = Advisory(**restored_advisory)
-    # Return response
-    response = jsonify(advisory.to_json(include_metadata=include_metadata))
     response.status_code = 200
     return response
 
