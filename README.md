@@ -47,3 +47,11 @@ $ flask run --host=127.0.0.1
 ```
 curl -L -X POST 'http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/token' -H 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'client_id=csaf-client' --data-urlencode 'grant_type=password' --data-urlencode 'client_secret=<CLIENT_SECRET>' --data-urlencode 'scope=openid' --data-urlencode 'username=admin' --data-urlencode 'password=<PASSWORD>'
 ```
+### Secrets
+Store your secrets in a file `.env`:
+```
+KEYCLOAK_USER="<KEYCLOAK_ADMIN_USER>"
+KEYCLOAK_PASSWORD="<KEYCLOAK_ADMIN_PASSWORD>"
+KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
+KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
+```
