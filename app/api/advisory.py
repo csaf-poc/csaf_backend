@@ -1,7 +1,8 @@
 from dictdiffer import patch
-from flask import abort, jsonify, request, url_for
+from flask import abort, g, jsonify, request, url_for
 from mongoengine.queryset.visitor import Q
 
+from app import oidc
 from app.api import bp
 from app.api import validate_schema
 from app.models.advisory import Advisory
@@ -398,6 +399,7 @@ def search_advisories(include_metadata=True):
 
 
 @bp.route('/advisories/<string:uid>/trail', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def audit_trail(uid, include_metadata=True):
     """
     Get audit trail of advisory with ID `uid`.
@@ -418,6 +420,9 @@ def audit_trail(uid, include_metadata=True):
         5xx:
             description: Server error.
     """
+    # TODO: Authorization
+    import json
+    print('OIDC Access Token:\n{}'.format(json.dumps(g.oidc_token_info, indent=3)))
     # Get audit trail of advisory
     audit_records = AuditRecord.get(uid)
     if len(audit_records) <= 0: abort(404, 'Advisory not found.')
