@@ -1,0 +1,72 @@
+version: "3.8"
+services:
+    idp:
+        image: jboss/keycloak:12.0.4
+        container_name: csaf_idp
+        restart: unless-stopped
+        depends_on:
+            - idp_db
+        environment:
+            DB_VENDOR: postgres
+            DB_ADDR: csaf_idp_db
+            DB_DATABASE: csaf
+            DB_USER: ${KEYCLOAK_DB_USER}
+            DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+            KEYCLOAK_USER: ${KEYCLOAK_USER}
+            KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+            KEYCLOAK_IMPORT: /tmp/csaf-realm.json
+        ports:
+            - ${KEYCLOAK_PORT:-8080}:8080
+            - ${KEYCLOAK_PORT:-8443}:8443
+        volumes:
+            - ./csaf-realm.json:/tmp/csaf-realm.json
+        networks:
+            - idp
+            - idp_db
+    idp_db:
+        image: postgres:13.2-alpine
+        container_name: csaf_idp_db
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ${KEYCLOAK_DB_USER}
+            POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+            POSTGRES_DB: csaf
+        volumes:
+            - idp_db_data:/var/lib/postgresql/data
+        networks:
+            - idp_db
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: csaf_flask:0.0.1
+        container_name: csaf_backend
+        restart: unless-stopped
+        depends_on:
+            - idp
+            - backend_db
+        environment:
+            MONGODB_HOST: csaf_db
+        ports:
+            - ${BACKEND_PORT:-5000}:5000
+        networks:
+            - idp
+            - backend_db
+    backend_db:
+        image: mongo:4.4.2
+        container_name: csaf_db
+        restart: unless-stopped
+        networks:
+            - backend_db
+volumes:
+    idp_db_data:
+        driver: local
+    bakend_db_data:
+        driver: local
+networks:
+    idp:
+        driver: bridge
+    idp_db:
+        driver: bridge
+    backend_db:
+        driver: bridge
