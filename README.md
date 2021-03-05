@@ -44,8 +44,16 @@ $ pip install -r requirements.txt
 $ flask run --host=127.0.0.1
 ```
 ### OIDC
+Request an `access_token` with Keycloak:
 ```
-curl -L -X POST 'http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/token' -H 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'client_id=csaf-client' --data-urlencode 'grant_type=password' --data-urlencode 'client_secret=<CLIENT_SECRET>' --data-urlencode 'scope=openid' --data-urlencode 'username=admin' --data-urlencode 'password=<PASSWORD>'
+curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-connect/token' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        --data-urlencode 'client_id=csaf-client' \
+        --data-urlencode 'grant_type=password' \
+        --data-urlencode 'client_secret=<CLIENT_SECRET>' \
+        --data-urlencode 'scope=openid' \
+        --data-urlencode 'username=<USER>' \
+        --data-urlencode 'password=<PASSWORD>'
 ```
 ### Secrets
 Store your secrets in a file `.env`:
