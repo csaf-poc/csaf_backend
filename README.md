@@ -43,3 +43,7 @@ $ pip install wheel IPython
 $ pip install -r requirements.txt
 $ flask run --host=127.0.0.1
 ```
+### OIDC
+```
+curl -L -X POST 'http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/token' -H 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'client_id=csaf-client' --data-urlencode 'grant_type=password' --data-urlencode 'client_secret=<CLIENT_SECRET>' --data-urlencode 'scope=openid' --data-urlencode 'username=admin' --data-urlencode 'password=<PASSWORD>'
+```
