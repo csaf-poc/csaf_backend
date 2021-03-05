@@ -48,6 +48,12 @@ services:
             - backend_db
         environment:
             MONGODB_HOST: csaf_db
+            OIDC_ISSUER: ${OIDC_ISSUER}
+            OIDC_AUTH_URI: ${OIDC_AUTH_URI}
+            OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+            OIDC_USERINFO_URI: ${OIDC_USERINFO_URI}
+            OIDC_TOKEN_URI: ${OIDC_TOKEN_URI}
+            OIDC_TOKEN_INTROSPECTION_URI: ${OIDC_TOKEN_INTROSPECTION_URI}
         ports:
             - ${BACKEND_PORT:-5000}:5000
         networks:
