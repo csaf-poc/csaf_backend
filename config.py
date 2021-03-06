@@ -50,14 +50,28 @@ class Config:
     # oidc
     OIDC_RESOURCE_SERVER_ONLY = True
     OIDC_CLIENT_SECRETS = 'oidc_client_secrets.json'
-    with open(OIDC_CLIENT_SECRETS, 'r') as oidc_client_secrets:
-        oidc_c_s = json.load(oidc_client_secrets)
-    oidc_c_s['web']['issuer'] = environ.get('OIDC_ISSUER', '')
-    oidc_c_s['web']['auth_uri'] = environ.get('OIDC_AUTH_URI', '')
-    oidc_c_s['web']['client_secret'] = environ.get('OIDC_CLIENT_SECRET', '')
-    oidc_c_s['web']['userinfo_uri'] = environ.get('OIDC_USERINFO_URI', '')
-    oidc_c_s['web']['token_uri'] = environ.get('OIDC_TOKEN_URI', '')
-    oidc_c_s['web']['token_introspection_uri'] = environ.get('OIDC_TOKEN_INTROSPECTION_URI', '')
     with open(OIDC_CLIENT_SECRETS, 'w') as oidc_client_secrets:
-        json.dump(oidc_c_s, oidc_client_secrets)
+        json.dump({
+            'web': {
+                'issuer': environ.get(OIDC_ISSUER),
+                'auth_uri': environ.get(OIDC_AUTH_URI),
+                'client_id': environ.get(OIDC_CLIENT_ID),
+                'client_secret': environ.get(OIDC_CLIENT_SECRET),
+                'redirect_uris': environ.get(OIDC_REDIRECT_URIS, '*').split(','),
+                'userinfo_uri': environ.get(OIDC_USERINFO_URI),
+                'token_uri': environ.get(OIDC_TOKEN_URI),
+                'token_introspection_uri': environ.get(OIDC_INTROSPECTION_URI)
+            }
+        }, oidc_client_secrets)
+
+##    with open(OIDC_CLIENT_SECRETS, 'r') as oidc_client_secrets:
+##        oidc_c_s = json.load(oidc_client_secrets)
+##    oidc_c_s['web']['issuer'] = environ.get('OIDC_ISSUER', '')
+##    oidc_c_s['web']['auth_uri'] = environ.get('OIDC_AUTH_URI', '')
+##    oidc_c_s['web']['client_secret'] = environ.get('OIDC_CLIENT_SECRET', '')
+##    oidc_c_s['web']['userinfo_uri'] = environ.get('OIDC_USERINFO_URI', '')
+##    oidc_c_s['web']['token_uri'] = environ.get('OIDC_TOKEN_URI', '')
+##    oidc_c_s['web']['token_introspection_uri'] = environ.get('OIDC_TOKEN_INTROSPECTION_URI', '')
+##    with open(OIDC_CLIENT_SECRETS, 'w') as oidc_client_secrets:
+##        json.dump(oidc_c_s, oidc_client_secrets)
     
