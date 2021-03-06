@@ -15,11 +15,13 @@ services:
             KEYCLOAK_USER: ${KEYCLOAK_USER}
             KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
             KEYCLOAK_IMPORT: /tmp/csaf-realm.json
+            OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
         ports:
             - ${KEYCLOAK_PORT:-8080}:8080
             - ${KEYCLOAK_PORT:-8443}:8443
         volumes:
-            - ./csaf-realm.json:/tmp/csaf-realm.json
+            - ./idp/startup.sh:/opt/jboss/startup-scripts/startup.sh
+            - ./idp/csaf-realm.json:/tmp/csaf-realm.tpl.json
         networks:
             - idp
             - idp_db
@@ -50,7 +52,9 @@ services:
             MONGODB_HOST: csaf_db
             OIDC_ISSUER: ${OIDC_ISSUER}
             OIDC_AUTH_URI: ${OIDC_AUTH_URI}
+            OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-csaf-client}
             OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+            OIDC_REDIRECT_URIS: ${OIDC_REDIRECT_URIS}
             OIDC_USERINFO_URI: ${OIDC_USERINFO_URI}
             OIDC_TOKEN_URI: ${OIDC_TOKEN_URI}
             OIDC_TOKEN_INTROSPECTION_URI: ${OIDC_TOKEN_INTROSPECTION_URI}
