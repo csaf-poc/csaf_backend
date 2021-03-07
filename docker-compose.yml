@@ -50,14 +50,14 @@ services:
             - backend_db
         environment:
             MONGODB_HOST: csaf_db
-            OIDC_ISSUER: ${OIDC_ISSUER}
-            OIDC_AUTH_URI: ${OIDC_AUTH_URI}
-            OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-csaf-client}
+            OIDC_ISSUER: http://csaf_idp:8080/auth/realms/CSAF
+            OIDC_AUTH_URI: http://csaf_idp:8080/auth/realms/CSAF/protocol/openid-connect/auth
+            OIDC_CLIENT_ID: csaf-client
             OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
             OIDC_REDIRECT_URIS: ${OIDC_REDIRECT_URIS}
-            OIDC_USERINFO_URI: ${OIDC_USERINFO_URI}
-            OIDC_TOKEN_URI: ${OIDC_TOKEN_URI}
-            OIDC_TOKEN_INTROSPECTION_URI: ${OIDC_TOKEN_INTROSPECTION_URI}
+            OIDC_USERINFO_URI: http://csaf_idp:8080/auth/realms/CSAF/protocol/openid-connect/userinfo
+            OIDC_TOKEN_URI: http://csaf_idp:8080/auth/realms/CSAF/protocol/openid-connect/token
+            OIDC_TOKEN_INTROSPECTION_URI: http://csaf_idp:8080/auth/realms/CSAF/protocol/openid-connect/token/introspect
         ports:
             - ${BACKEND_PORT:-5000}:5000
         networks:
