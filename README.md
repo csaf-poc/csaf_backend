@@ -63,12 +63,7 @@ KEYCLOAK_PASSWORD="<KEYCLOAK_ADMIN_PASSWORD>"
 KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
 KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
 
-OIDC_ISSUER="http://192.168.132.131:8080/auth/realms/CSAF"
-OIDC_AUTH_URI="http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/auth"
-OIDC_CLIENT_ID="csaf-client"
-OIDC_CLIENT_SECRET="change-me"
-OIDC_REDIRECT_URIS="*" # Comma-separated URIs
-OIDC_USERINFO_URI="http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/userinfo"
-OIDC_TOKEN_URI="http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/token"
-OIDC_TOKEN_INTROSPECTION_URI="http://192.168.132.131:8080/auth/realms/CSAF/protocol/openid-connect/token/introspect"
+OIDC_PROVIDER="https://<IP-OPENID_PROVIDER>:8443"       # OpenID Provider
+OIDC_CLIENT_SECRET="<CLIENT_SECRET>"                    # Client Secret
+OIDC_REDIRECT_URIS="*"                                  # Comma-separated redirect URIs
 ```
