@@ -1,5 +1,4 @@
-# Packages
 __pycache__
-
-# Virtual Environment
-venv
+.venv
+.env
+.flaskenv
