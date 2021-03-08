@@ -50,6 +50,7 @@ class Config:
     # oidc
     OIDC_RESOURCE_SERVER_ONLY = True
     OIDC_CLIENT_SECRETS = 'oidc_client_secrets.json'
+##    OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
     with open(OIDC_CLIENT_SECRETS, 'w') as oidc_client_secrets:
         json.dump({
             'web': {
@@ -60,7 +61,7 @@ class Config:
                 'redirect_uris': environ.get('OIDC_REDIRECT_URIS', '*').split(','),
                 'userinfo_uri': environ.get('OIDC_USERINFO_URI'),
                 'token_uri': environ.get('OIDC_TOKEN_URI'),
-                'token_introspection_uri': environ.get('OIDC_INTROSPECTION_URI')
+                'token_introspection_uri': environ.get('OIDC_TOKEN_INTROSPECTION_URI')
             }
         }, oidc_client_secrets)
     
