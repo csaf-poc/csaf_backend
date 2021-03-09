@@ -38,7 +38,7 @@ docker-compose up -d
 Access the Keycloak IdP or the CSAF Backend API specification:
 ```
 curl http://localhost:8080/
-curl http://localhost:5000/api/spec
+curl http://localhost:5000/api/specs/
 ```
 Stop the containers:
 ```
@@ -58,7 +58,7 @@ flask run --host=0.0.0.0
 Access the Keycloak IdP or the CSAF Backend API specification:
 ```
 curl http://localhost:8080/
-curl http://localhost:5000/api/spec
+curl http://localhost:5000/api/specs/
 ```
 Stop the containers:
 ```
