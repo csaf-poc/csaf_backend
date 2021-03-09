@@ -58,12 +58,20 @@ curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-conn
 ### Secrets
 Store your secrets in a file `.env`:
 ```
+# Keycloak IDP
 KEYCLOAK_USER="<KEYCLOAK_ADMIN_USER>"
 KEYCLOAK_PASSWORD="<KEYCLOAK_ADMIN_PASSWORD>"
 KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
 KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
 
+# Keycloak OIDC
 OIDC_PROVIDER="https://<IP-OPENID_PROVIDER>:8443"       # OpenID Provider
 OIDC_CLIENT_SECRET="<CLIENT_SECRET>"                    # Client Secret
 OIDC_REDIRECT_URIS="*"                                  # Comma-separated redirect URIs
+
+# CSAF API Database
+MONGO_ROOT="<MONGODB_ADMIN_USER>"
+MONGO_ROOT_PASSWORD="<MONGODB_ADMIN_PASSWORD>"
+MONGO_USER="<MONGODB_USER>"
+MONGO_USER_PASSWORD="<MONGODB_PASSWORD>"
 ```
