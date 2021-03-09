@@ -3,7 +3,41 @@
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 
 ## Setup
+First, clone the project:
+```
+git clone https://github.com/pdamian/csaf_backend.git && cd csaf_backend/
+```
+Then, create a file named `.env` that stores your secrets (update with your own set of values):
+```
+cat << EOF > .env
+# Keycloak IDP
+KEYCLOAK_USER="<KEYCLOAK_ADMIN_USER>"
+KEYCLOAK_PASSWORD="<KEYCLOAK_ADMIN_PASSWORD>"
+KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
+KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
+
+# Keycloak OIDC
+OIDC_PROVIDER="https://<IP-OPENID_PROVIDER>:8443"       # OpenID Provider
+OIDC_CLIENT_SECRET="<CLIENT_SECRET>"                    # Client Secret
+OIDC_REDIRECT_URIS="*"                                  # Comma-separated redirect URIs
+
+# CSAF API Database
+MONGO_ROOT="<MONGODB_ADMIN_USER>"
+MONGO_ROOT_PASSWORD="<MONGODB_ADMIN_PASSWORD>"
+MONGO_USER="<MONGODB_USER>"
+MONGO_USER_PASSWORD="<MONGODB_PASSWORD>"
+EOF
+```
+Choose between a testing and development setup.
 ### Testing
+Launch the containers:
+```
+docker-compose up -d
+```
+Stop the containers:
+```
+docker-compose down
+```
 ### Development
 
 
@@ -62,23 +96,4 @@ curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-conn
         --data-urlencode 'username=<USER>' \
         --data-urlencode 'password=<PASSWORD>'
 ```
-### Secrets
-Store your secrets in a file `.env`:
-```
-# Keycloak IDP
-KEYCLOAK_USER="<KEYCLOAK_ADMIN_USER>"
-KEYCLOAK_PASSWORD="<KEYCLOAK_ADMIN_PASSWORD>"
-KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
-KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
 
-# Keycloak OIDC
-OIDC_PROVIDER="https://<IP-OPENID_PROVIDER>:8443"       # OpenID Provider
-OIDC_CLIENT_SECRET="<CLIENT_SECRET>"                    # Client Secret
-OIDC_REDIRECT_URIS="*"                                  # Comma-separated redirect URIs
-
-# CSAF API Database
-MONGO_ROOT="<MONGODB_ADMIN_USER>"
-MONGO_ROOT_PASSWORD="<MONGODB_ADMIN_PASSWORD>"
-MONGO_USER="<MONGODB_USER>"
-MONGO_USER_PASSWORD="<MONGODB_PASSWORD>"
-```
