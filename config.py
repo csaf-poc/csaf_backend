@@ -50,18 +50,18 @@ class Config:
     # oidc
     OIDC_RESOURCE_SERVER_ONLY = True
     OIDC_CLIENT_SECRETS = 'oidc_client_secrets.json'
-##    OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
     with open(OIDC_CLIENT_SECRETS, 'w') as oidc_client_secrets:
+        provider = environ.get('OIDC_PROVIDER', 'http://localhost:8080')
         json.dump({
             'web': {
-                'issuer': environ.get('OIDC_ISSUER'),
-                'auth_uri': environ.get('OIDC_AUTH_URI'),
-                'client_id': environ.get('OIDC_CLIENT_ID'),
+                'issuer': environ.get('OIDC_ISSUER', '{}/auth/realms/CSAF'.format(provider)),
+                'auth_uri': environ.get('OIDC_AUTH_URI', '{}/auth/realms/CSAF/protocol/openid-connect/auth'.format(provider)),
+                'client_id': environ.get('OIDC_CLIENT_ID', 'csaf-client'),
                 'client_secret': environ.get('OIDC_CLIENT_SECRET'),
                 'redirect_uris': environ.get('OIDC_REDIRECT_URIS', '*').split(','),
-                'userinfo_uri': environ.get('OIDC_USERINFO_URI'),
-                'token_uri': environ.get('OIDC_TOKEN_URI'),
-                'token_introspection_uri': environ.get('OIDC_TOKEN_INTROSPECTION_URI')
+                'userinfo_uri': environ.get('OIDC_USERINFO_URI', '{}/auth/realms/CSAF/protocol/openid-connect/userinfo'.format(provider)),
+                'token_uri': environ.get('OIDC_TOKEN_URI', '{}/auth/realms/CSAF/protocol/openid-connect/token'.format(provider)),
+                'token_introspection_uri': environ.get('OIDC_TOKEN_INTROSPECTION_URI', '{}/auth/realms/CSAF/protocol/openid-connect/token/introspect'.format(provider))
             }
         }, oidc_client_secrets)
     
