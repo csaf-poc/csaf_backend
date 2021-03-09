@@ -65,6 +65,7 @@ Stop the containers:
 docker-compose -f docker-compose.test.yml down
 ```
 
+# TODO: Remove
 ## Notes
 ### Test Setup
 The following commands can be used for testing the CSAF backend. Note that the corresponding database is not presisted and accesses done by the DB root user. This setup is not recommended for production purposes.
