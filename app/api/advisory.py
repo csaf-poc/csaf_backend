@@ -313,11 +313,18 @@ def restore_advisory(uid, vid, include_metadata=False):
     responses:
         200:
             description: Advisory with ID `uid` in version `vid`.
+        401:
+            description: Unauthorized user
         404:
             description: Advisory with ID `uid` not found or invalid version `vid`.
         5xx:
             description: Server error.
     """
+    # Authorization
+    user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
+    if not 'admin' in user_roles:
+        abort(401, 'User is not authorized to restore advisories.')
+        
     # Get advisory and corresponding audit trail
     audit_records = AuditRecord.get(uid)
     if len(audit_records) <= 0: abort(404, 'Advisory not found.')
@@ -433,7 +440,7 @@ def audit_trail(uid, include_metadata=True):
     """
     # Authorization
     user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
-    if not 'audit' in user_roles:
+    if not 'admin' in user_roles:
         abort(401, 'User is not authorized to access audit trails.')
     
     # Get audit trail of advisory
