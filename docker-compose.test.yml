@@ -43,7 +43,7 @@ services:
         # flask run --host=0.0.0.0
     backend_db:
         image: mongo:4.4.2
-        container_name: csaf_db
+        container_name: csaf_backend_db
         restart: unless-stopped
         command: mongod --auth
         environment:

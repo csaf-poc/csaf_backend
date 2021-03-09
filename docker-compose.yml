@@ -50,7 +50,7 @@ services:
         environment:
             APP_ENV: "prod"
             APP_DEBUG: "False"
-            MONGODB_HOST: csaf_db
+            MONGODB_HOST: csaf_backend_db
             MONGODB_DB: ${MONGO_DB:-csaf_advisory_db}
             MONGODB_USERNAME: ${MONGO_USER}
             MONGODB_PASSWORD: ${MONGO_USER_PASSWORD}
@@ -71,7 +71,7 @@ services:
             - backend_db
     backend_db:
         image: mongo:4.4.2
-        container_name: csaf_db
+        container_name: csaf_backend_db
         restart: unless-stopped
         command: mongod --auth
         environment:
