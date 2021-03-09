@@ -120,5 +120,6 @@ curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-conn
         --data-urlencode 'scope=openid' \
         --data-urlencode 'username=<USER>' \
         --data-urlencode 'password=<PASSWORD>'
+curl -L -X GET 'http://<CSAF_BACKEND_IP>:5000/api/advisories' -H 'Authorization: Bearer <ACCESS_TOKEN>'
 ```
 
