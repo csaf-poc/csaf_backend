@@ -2,7 +2,7 @@
 ## Architecture
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 
-## Setup
+## Installation
 First, clone the project:
 ```
 git clone https://github.com/pdamian/csaf_backend.git && cd csaf_backend/
@@ -28,7 +28,8 @@ MONGO_USER="<MONGODB_USER>"
 MONGO_USER_PASSWORD="<MONGODB_PASSWORD>"
 EOF
 ```
-Choose between a testing and development setup.
+## Setup
+Start the containers either for testing or development.
 ### Testing
 Launch the containers:
 ```
