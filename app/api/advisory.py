@@ -12,6 +12,7 @@ from app.schemas.filter import FilterSchema
 
 
 @bp.route('/advisories', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def list_advisories(endpoint='api.list_advisories', include_metadata=True):
     """
     List advisories.
@@ -48,6 +49,7 @@ def list_advisories(endpoint='api.list_advisories', include_metadata=True):
 
 
 @bp.route('/advisories/export', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def export_advisories(endpoint='api.export_advisories'):
     """
     Export advisories in CSAF format.
@@ -77,6 +79,7 @@ def export_advisories(endpoint='api.export_advisories'):
 
 
 @bp.route('/advisories', methods=['POST'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 @validate_schema(CSAFv2Schema)
 def create_advisory():
     """
@@ -134,6 +137,7 @@ def create_advisory():
 
 
 @bp.route('/advisories/<string:uid>', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def get_advisory(uid, include_metadata=True):
     """
     Get advisory with ID `uid`.
@@ -163,6 +167,7 @@ def get_advisory(uid, include_metadata=True):
 
 
 @bp.route('/advisories/<string:uid>/export', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def export_advisory(uid):
     """
     Export advisory with ID `uid` in CSAF format.
@@ -187,6 +192,7 @@ def export_advisory(uid):
 
 
 @bp.route('/advisories/<string:uid>', methods=['PUT'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 @validate_schema(CSAFv2Schema)
 def update_advisory(uid):
     """
@@ -253,6 +259,7 @@ def update_advisory(uid):
 
 
 @bp.route('/advisories/<string:uid>', methods=['DELETE'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def delete_advisory(uid):
     """
     Delete advisory with ID `uid`.
@@ -285,6 +292,7 @@ def delete_advisory(uid):
 
 
 @bp.route('/advisories/<string:uid>/restore/v<int:vid>', methods=['GET'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 def restore_advisory(uid, vid, include_metadata=False):
     """
     Restore version `vid` of the advisory with ID `uid`.
@@ -335,6 +343,7 @@ def restore_advisory(uid, vid, include_metadata=False):
 
 
 @bp.route('/advisories/search', methods=['POST'])
+@oidc.accept_token(require_token=True, scopes_required=['openid'])
 @validate_schema(FilterSchema)
 def search_advisories(include_metadata=True):
     """
@@ -415,14 +424,18 @@ def audit_trail(uid, include_metadata=True):
     responses:
         200:
             description: Audit trail of advisory with ID `uid`.
+        401:
+            description: Unauthorized user
         404:
             description: Advisory with ID `uid` not found.
         5xx:
             description: Server error.
     """
-    # TODO: Authorization
-    import json
-    print('OIDC Access Token:\n{}'.format(json.dumps(g.oidc_token_info, indent=3)))
+    # Authorization
+    user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
+    if not 'audit' in user_roles:
+        abort(401, 'User is not authorized to access audit trails.')
+    
     # Get audit trail of advisory
     audit_records = AuditRecord.get(uid)
     if len(audit_records) <= 0: abort(404, 'Advisory not found.')
