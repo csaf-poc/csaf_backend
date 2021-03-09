@@ -110,7 +110,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "defaultRoles": [
         "manage-account",
         "view-profile"
@@ -157,7 +157,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [
         "/realms/CSAF/account/*"
       ],
@@ -210,7 +210,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -249,7 +249,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -287,7 +287,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [
         "*"
       ],
@@ -349,7 +349,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -390,7 +390,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "<AUTOMATICALLY_REPLACED>",
       "redirectUris": [
         "/admin/CSAF/console/*"
       ],

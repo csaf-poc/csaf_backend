@@ -11,8 +11,8 @@ RUN pip install -r requirements.txt
 RUN pip install gunicorn
 
 COPY ./app /var/www/app
-COPY ./csaf.py ./config.py ./boot.sh ./oidc_client_secrets.json /var/www/
-RUN chmod a+x boot.sh
+COPY ./csaf.py ./config.py ./startup.sh ./oidc_client_secrets.json /var/www/
+RUN chmod a+x startup.sh
 RUN chmod a+w oidc_client_secrets.json
 
 RUN addgroup -g $GROUP_ID www
@@ -21,4 +21,4 @@ RUN adduser -D -u $USER_ID -G www www -s /bin/sh
 USER www
 
 EXPOSE 5000
-ENTRYPOINT ["./boot.sh"]
+ENTRYPOINT ["./startup.sh"]
