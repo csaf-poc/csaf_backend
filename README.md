@@ -1,6 +1,13 @@
 # csaf_backend
-### Architecture
+## Architecture
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
+
+## Setup
+### Testing
+### Development
+
+
+## Notes
 ### Test Setup
 The following commands can be used for testing the CSAF backend. Note that the corresponding database is not presisted and accesses done by the DB root user. This setup is not recommended for production purposes.
 ```
@@ -14,8 +21,6 @@ $ docker-compose -f docker-compose.test.yml ps
 $ docker-compose -f docker-compose.test.yml down
 ```
 ### TODO: Remove
-
-
 Build image:
 ```
 $ cd csaf_backend/
