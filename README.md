@@ -40,7 +40,20 @@ Stop the containers:
 docker-compose down
 ```
 ### Development
-
+Launch the containers:
+```
+docker-compose -f docker-compose.test.yml up -d
+```
+Manually launch the CSAF backend API:
+```
+export $(cat .env | grep -v -E '^#' | xargs)
+export FLASK_ENV=development
+flask run --host=0.0.0.0
+```
+Stop the containers:
+```
+docker-compose -f docker-compose.test.yml down
+```
 
 ## Notes
 ### Test Setup
