@@ -1,4 +1,6 @@
 # csaf_backend
+### Architecture
+![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 ### Test Setup
 The following commands can be used for testing the CSAF backend. Note that the corresponding database is not presisted and accesses done by the DB root user. This setup is not recommended for production purposes.
 ```
