@@ -1,26 +1,77 @@
 version: "3.8"
 services:
-    backend:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: csaf_flask:0.0.1
-        container_name: csaf_backend
+    idp:
+        image: jboss/keycloak:12.0.4
+        container_name: csaf_idp
         restart: unless-stopped
         depends_on:
-            - db
+            - idp_db
         environment:
-            MONGODB_HOST: csaf_db
+            DB_VENDOR: postgres
+            DB_ADDR: csaf_idp_db
+            DB_DATABASE: ${KEYCLOAK_DB:-csaf}
+            DB_USER: ${KEYCLOAK_DB_USER}
+            DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+            KEYCLOAK_USER: ${KEYCLOAK_USER}
+            KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+            KEYCLOAK_IMPORT: /tmp/csaf-realm.json
+            OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
         ports:
-            - "5000:5000"
+            - ${KEYCLOAK_PORT:-8080}:8080
+            - ${KEYCLOAK_PORT:-8443}:8443
+        volumes:
+            - ./idp/csaf-realm.json:/tmp/csaf-realm.tpl.json:ro
+            - ./idp/startup.sh:/opt/jboss/startup-scripts/startup.sh:ro
         networks:
-            - backend
-    db:
+            - idp
+            - idp_db
+    idp_db:
+        image: postgres:13.2-alpine
+        container_name: csaf_idp_db
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${KEYCLOAK_DB:-csaf}
+            POSTGRES_USER: ${KEYCLOAK_DB_USER}
+            POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+        volumes:
+            - idp_db_data:/var/lib/postgresql/data
+        networks:
+            - idp_db
+    # backend:
+        # export $(cat .env | grep -v -E '^#' | xargs)
+        # export FLASK_ENV=development
+        # flask run --host=0.0.0.0
+    backend_db:
         image: mongo:4.4.2
         container_name: csaf_db
         restart: unless-stopped
+        command: mongod --auth
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_INITDB_DATABASE: ${MONGO_DB:-csaf_advisory_db}
+            MONGODB_USERNAME: ${MONGO_USER}
+            MONGODB_PASSWORD: ${MONGO_USER_PASSWORD}
+            MONGODB_DATA_DIR: /data/db
+            MONGODB_LOG_DIR: /dev/null
+        volumes:
+            - ./db/startup.sh:/docker-entrypoint-initdb.d/startup.sh:ro
+            - backend_db_data:/data/db
+        ports:
+            - 27018:27017
         networks:
-            - backend
+            - backend_db
+volumes:
+    idp_db_data:
+        driver: local
+    backend_data:
+        driver: local
+    backend_db_data:
+        driver: local
 networks:
-    backend:
+    idp:
+        driver: bridge
+    idp_db:
+        driver: bridge
+    backend_db:
         driver: bridge
