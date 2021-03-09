@@ -16,6 +16,7 @@ class Base(db.Document):
     _creation_date = db.ComplexDateTimeField(default=datetime.utcnow)
     _modified_date = db.ComplexDateTimeField(default=datetime.utcnow)
     _accessed_date = db.ComplexDateTimeField(default=datetime.utcnow)
+    _author = db.StringField()
 
     def __repr__(self):
         return '<Base "{}">'.format('TODO: self.id')
@@ -98,7 +99,8 @@ class Base(db.Document):
                     '_version': self._version,
                     '_creation_date': '{}Z'.format(self._creation_date.isoformat('T')),
                     '_modified_date': '{}Z'.format(self._modified_date.isoformat('T')),
-                    '_accessed_date': '{}Z'.format(self._accessed_date.isoformat('T'))
+                    '_accessed_date': '{}Z'.format(self._accessed_date.isoformat('T')),
+                    '_author': '{}'.format(self._author)
                 }
             )
         return result

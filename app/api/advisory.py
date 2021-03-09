@@ -126,6 +126,7 @@ def create_advisory():
     """
     # Load data
     data = request.get_json() or {}
+    data['_author'] = g.oidc_token_info.get('preferred_username', '')
     # Create advisory
     advisory = Advisory()
     advisory.initialize(**data)
@@ -246,6 +247,7 @@ def update_advisory(uid):
     """
     # Load data
     data = request.get_json() or {}
+    data['_author'] = g.oidc_token_info.get('preferred_username', '')
     # Get existing advisory
     advisory = Advisory.get(uid)
     if advisory is None: abort(404, 'Advisory not found.')
@@ -324,7 +326,6 @@ def restore_advisory(uid, vid, include_metadata=False):
     user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
     if not 'admin' in user_roles:
         abort(401, 'User is not authorized to restore advisories.')
-        
     # Get advisory and corresponding audit trail
     audit_records = AuditRecord.get(uid)
     if len(audit_records) <= 0: abort(404, 'Advisory not found.')
@@ -442,7 +443,6 @@ def audit_trail(uid, include_metadata=True):
     user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
     if not 'admin' in user_roles:
         abort(401, 'User is not authorized to access audit trails.')
-    
     # Get audit trail of advisory
     audit_records = AuditRecord.get(uid)
     if len(audit_records) <= 0: abort(404, 'Advisory not found.')
