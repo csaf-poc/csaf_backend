@@ -1,4 +1,4 @@
-# csaf_backend
+# CSAF Backend API
 ## Architecture
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 
