@@ -45,7 +45,15 @@ class Config:
             },
             'version': '0.1'
         },
-        'schemes': ['http', 'https']
+        'schemes': ['http', 'https'],
+        'securityDefinitions': {
+            'OpenID Connect (OIDC) Access Token': {
+                'in': 'header',
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'description': 'JWT Authorization header using the Bearer scheme (example value: \"Bearer {TOKEN}\").'
+            }
+        }
     }
     # oidc
     OIDC_RESOURCE_SERVER_ONLY = True

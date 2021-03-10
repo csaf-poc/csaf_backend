@@ -32,6 +32,9 @@ def list_advisories(endpoint='api.list_advisories', include_metadata=True):
             schema:
                 type: integer
                 default: 10
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisories
@@ -69,6 +72,9 @@ def export_advisories(endpoint='api.export_advisories'):
             schema:
                 type: integer
                 default: 10
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisories
@@ -118,6 +124,9 @@ def create_advisory():
                         }
                     }
                 }
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         201:
             description: Advisory created.
@@ -151,6 +160,9 @@ def get_advisory(uid, include_metadata=True):
             required: true
             schema:
                 type: string
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisory with ID `uid`.
@@ -181,6 +193,9 @@ def export_advisory(uid):
             required: true
             schema:
                 type: string
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisory with ID `uid`.
@@ -237,6 +252,9 @@ def update_advisory(uid):
                         }
                     }
                 }
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisory with ID `uid`.
@@ -274,6 +292,9 @@ def delete_advisory(uid):
             required: true
             schema:
                 type: string
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         204:
             description: Advisory with ID `uid` deleted.
@@ -312,6 +333,9 @@ def restore_advisory(uid, vid, include_metadata=False):
             required: true
             schema:
                 type: integer
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Advisory with ID `uid` in version `vid`.
@@ -384,6 +408,9 @@ def search_advisories(include_metadata=True):
                     ],
                     "op": "and"
                 }
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Matching advisories.
@@ -429,6 +456,9 @@ def audit_trail(uid, include_metadata=True):
             required: true
             schema:
                 type: string
+    security:
+        - OpenID Connect (OIDC) Access Token:
+            -   Authorization
     responses:
         200:
             description: Audit trail of advisory with ID `uid`.
