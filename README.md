@@ -33,7 +33,7 @@ Ensure that you have [Docker](https://docs.docker.com/get-docker/) and [Docker C
 
 The development setup further requires the packages `python3` and `python3-venv` being installed.
 ### Setup
-Start the containers either for testing or development.
+Start the containers either for testing or development. Note that both setups are not recommended to be used in production.
 #### Testing
 Launch the containers:
 ```
