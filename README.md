@@ -53,7 +53,7 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 Manually launch the CSAF backend API:
 ```
-export $(cat .env | grep -v -E '^#' | xargs)
+export $(cat .env | grep -v -E '#.*$' | xargs)
 export FLASK_ENV=development
 flask run --host=0.0.0.0
 ```
