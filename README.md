@@ -17,7 +17,7 @@ KEYCLOAK_DB_USER="<KEYCLOAK_DB_USER>"
 KEYCLOAK_DB_PASSWORD="<KEYCLOAK_DB_PASSWORD>"
 
 # Keycloak OIDC
-OIDC_PROVIDER="https://<IP-OPENID_PROVIDER>:8443"       # OpenID Provider
+OIDC_PROVIDER="http://<IP-OPENID_PROVIDER>:8080"        # OpenID Provider
 OIDC_CLIENT_SECRET="<CLIENT_SECRET>"                    # Client Secret
 OIDC_REDIRECT_URIS="*"                                  # Comma-separated redirect URIs
 
@@ -28,9 +28,11 @@ MONGO_USER="<MONGODB_USER>"
 MONGO_USER_PASSWORD="<MONGODB_PASSWORD>"
 EOF
 ```
-## Setup
+### Requirements
+Ensure that you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+### Setup
 Start the containers either for testing or development.
-### Testing
+#### Testing
 Launch the containers:
 ```
 docker-compose up -d
@@ -40,11 +42,11 @@ Access the Keycloak IdP or the CSAF Backend API specification:
 curl http://localhost:8080/
 curl http://localhost:5000/api/specs/
 ```
-Stop the containers:
+If needed, the containers can be stopped with:
 ```
 docker-compose down
 ```
-### Development
+#### Development
 Launch the containers:
 ```
 docker-compose -f docker-compose.test.yml up -d
@@ -60,7 +62,7 @@ Access the Keycloak IdP or the CSAF Backend API specification:
 curl http://localhost:8080/
 curl http://localhost:5000/api/specs/
 ```
-Stop the containers:
+If needed, the containers can be stopped with:
 ```
 docker-compose -f docker-compose.test.yml down
 ```
