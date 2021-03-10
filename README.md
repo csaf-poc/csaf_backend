@@ -82,6 +82,31 @@ Use the following commands if you want to unset the previously configured enviro
 unset $(cat .env | sed -E 's/#.*$|\=.*$//g' | xargs)
 unset FLASK_ENV
 ```
+## How To
+### Keycloak Test User
+1. Using a web browser, access and login to the [Keycloak Administration Console](http://localhost:8080/auth/) (use your specified secrets)
+3. Select the `CSAF` realm, and go to `Manage/Users`
+4. Click `Add User`
+5. Enter a `Username` and click `Save`
+6. Switch to the `Credentials` tab, enter a `Password` and `Password Confirmation` and click `Set Password`
+### CSAF Backend API Test
+1. Simulate a Keycloak user login to receive an access token for the Backend API:
+```
+curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-connect/token' \
+        -H 'Content-Type: application/x-www-form-urlencoded' \
+        --data-urlencode 'client_id=csaf-client' \
+        --data-urlencode 'grant_type=password' \
+        --data-urlencode 'client_secret=<CLIENT_SECRET>' \
+        --data-urlencode 'scope=openid' \
+        --data-urlencode 'username=<USER>' \
+        --data-urlencode 'password=<PASSWORD>'
+```
+2. Use the access token to query the CSAF Backend API:
+```
+curl -L -X GET 'http://<CSAF_BACKEND_IP>:5000/api/advisories' -H 'Authorization: Bearer <ACCESS_TOKEN>'
+```
+Note: The access token can also be used at the (CSAF Backend API specification)[http://<CSAF_BACKEND_IP>:5000/api/specs/].
+
 # TODO: Remove
 ## Notes
 ### Test Setup
@@ -96,8 +121,6 @@ $ docker-compose -f docker-compose.test.yml ps
     csaf_db        docker-entrypoint.sh mongod   Up      27017/tcp
 $ docker-compose -f docker-compose.test.yml down
 ```
-## How To
-
 
 ### TODO: Remove
 Build image:
