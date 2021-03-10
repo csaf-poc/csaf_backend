@@ -348,7 +348,7 @@ def restore_advisory(uid, vid, include_metadata=False):
     """
     # Authorization
     user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
-    if not 'admin' in user_roles:
+    if not 'csaf_admin' in user_roles:
         abort(401, 'User is not authorized to restore advisories.')
     # Get advisory and corresponding audit trail
     audit_records = AuditRecord.get(uid)
@@ -471,7 +471,7 @@ def audit_trail(uid, include_metadata=True):
     """
     # Authorization
     user_roles = g.oidc_token_info.get('realm_access', {}).get('roles', [])
-    if not 'admin' in user_roles:
+    if not 'csaf_admin' in user_roles:
         abort(401, 'User is not authorized to access audit trails.')
     # Get audit trail of advisory
     audit_records = AuditRecord.get(uid)
