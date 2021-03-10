@@ -49,7 +49,7 @@ docker-compose down
 #### Development
 Launch the containers:
 ```
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f docker-compose.dev.yml up -d
 ```
 Manually launch the CSAF backend API:
 ```
@@ -64,7 +64,7 @@ curl http://localhost:5000/api/specs/
 ```
 If needed, the containers can be stopped with (add `--volumes` to drop all persisted data, e.g. users added to Keycloak or stored advisories):
 ```
-docker-compose -f docker-compose.test.yml down
+docker-compose -f docker-compose.dev.yml down
 ```
 
 # TODO: Remove
