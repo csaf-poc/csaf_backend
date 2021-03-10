@@ -37,12 +37,12 @@ Launch the containers:
 ```
 docker-compose up -d
 ```
-Access the Keycloak IdP or the CSAF Backend API specification:
+After a while, the Keycloak IdP and CSAF Backend API specification should become accessible at:
 ```
 curl http://localhost:8080/
 curl http://localhost:5000/api/specs/
 ```
-If needed, the containers can be stopped with:
+If needed, the containers can be stopped with (add `--volumes` to drop all persisted data, e.g. users added to Keycloak or stored advisories):
 ```
 docker-compose down
 ```
@@ -57,12 +57,12 @@ export $(cat .env | grep -v -E '^#' | xargs)
 export FLASK_ENV=development
 flask run --host=0.0.0.0
 ```
-Access the Keycloak IdP or the CSAF Backend API specification:
+After a while, the Keycloak IdP and CSAF Backend API specification should become accessible at:
 ```
 curl http://localhost:8080/
 curl http://localhost:5000/api/specs/
 ```
-If needed, the containers can be stopped with:
+If needed, the containers can be stopped with (add `--volumes` to drop all persisted data, e.g. users added to Keycloak or stored advisories):
 ```
 docker-compose -f docker-compose.test.yml down
 ```
