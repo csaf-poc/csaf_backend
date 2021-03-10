@@ -56,7 +56,7 @@ docker-compose -f docker-compose.dev.yml up -d
 Manually launch the CSAF backend API:
 ```
 # Environment variables
-export $(cat .env | grep -v -E '#.*$' | xargs)
+export $(cat .env | sed -E 's/#.*$|//g' | xargs)
 export FLASK_ENV=development
 
 # Python virtual environment
@@ -77,7 +77,11 @@ If needed, the containers can be stopped with (add `--volumes` to drop all persi
 ```
 docker-compose -f docker-compose.dev.yml down
 ```
-
+Use the following commands if you want to unset the previously configured environment variables:
+```
+unset $(cat .env | sed -E 's/#.*$|\=.*$//g' | xargs)
+unset FLASK_ENV
+```
 # TODO: Remove
 ## Notes
 ### Test Setup
@@ -92,6 +96,9 @@ $ docker-compose -f docker-compose.test.yml ps
     csaf_db        docker-entrypoint.sh mongod   Up      27017/tcp
 $ docker-compose -f docker-compose.test.yml down
 ```
+## How To
+
+
 ### TODO: Remove
 Build image:
 ```
