@@ -37,7 +37,7 @@ Start the containers either for testing or development.
 #### Testing
 Launch the containers:
 ```
-docker-compose up -d
+docker-compose -f docker-compose.test.yml up -d
 ```
 After a while, the Keycloak IdP and CSAF Backend API specification should become accessible at:
 ```
@@ -46,7 +46,7 @@ curl http://localhost:5000/api/specs/
 ```
 If needed, the containers can be stopped with (add `--volumes` to drop all persisted data, e.g. users added to Keycloak or stored advisories):
 ```
-docker-compose down
+docker-compose -f docker-compose.test.yml down
 ```
 #### Development
 Launch the containers:
