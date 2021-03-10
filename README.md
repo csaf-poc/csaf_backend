@@ -30,6 +30,10 @@ EOF
 ```
 ### Requirements
 Ensure that you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+The development setup requires some further packages being installed:
+* python3
+* python3-venv
 ### Setup
 Start the containers either for testing or development.
 #### Testing
@@ -53,8 +57,17 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 Manually launch the CSAF backend API:
 ```
+# Environment variables
 export $(cat .env | grep -v -E '#.*$' | xargs)
 export FLASK_ENV=development
+
+# Python virtual environment
+python3 -mvenv .venv
+source .venv/bin/activate
+pip install wheel
+pip install -r requirements.txt
+
+# Flask server
 flask run --host=0.0.0.0
 ```
 After a while, the Keycloak IdP and CSAF Backend API specification should become accessible at:
