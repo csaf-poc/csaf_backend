@@ -1,4 +1,4 @@
-# csaf_backend
+# CSAF Backend API
 ## Architecture
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 
@@ -33,11 +33,11 @@ Ensure that you have [Docker](https://docs.docker.com/get-docker/) and [Docker C
 
 The development setup further requires the packages `python3` and `python3-venv` being installed.
 ### Setup
-Start the containers either for testing or development.
+Start the containers either for testing or development. Note that both setups are not recommended to be used in production.
 #### Testing
 Launch the containers:
 ```
-docker-compose up -d
+docker-compose -f docker-compose.test.yml up -d
 ```
 After a while, the Keycloak IdP and CSAF Backend API specification should become accessible at:
 ```
@@ -46,7 +46,7 @@ curl http://localhost:5000/api/specs/
 ```
 If needed, the containers can be stopped with (add `--volumes` to drop all persisted data, e.g. users added to Keycloak or stored advisories):
 ```
-docker-compose down
+docker-compose -f docker-compose.test.yml down
 ```
 #### Development
 Launch the containers:
@@ -56,7 +56,7 @@ docker-compose -f docker-compose.dev.yml up -d
 Manually launch the CSAF backend API:
 ```
 # Environment variables
-export $(cat .env | grep -v -E '#.*$' | xargs)
+export $(cat .env | sed -E 's/#.*$|//g' | xargs)
 export FLASK_ENV=development
 
 # Python virtual environment
@@ -77,53 +77,20 @@ If needed, the containers can be stopped with (add `--volumes` to drop all persi
 ```
 docker-compose -f docker-compose.dev.yml down
 ```
-
-# TODO: Remove
-## Notes
-### Test Setup
-The following commands can be used for testing the CSAF backend. Note that the corresponding database is not presisted and accesses done by the DB root user. This setup is not recommended for production purposes.
+Use the following commands if you want to unset the previously configured environment variables:
 ```
-$ cd csaf_backend/
-$ docker-compose -f docker-compose.test.yml up -d
-$ docker-compose -f docker-compose.test.yml ps
-        Name                 Command             State           Ports         
-    ---------------------------------------------------------------------------
-    csaf_backend   ./boot.sh                     Up      0.0.0.0:5000->5000/tcp
-    csaf_db        docker-entrypoint.sh mongod   Up      27017/tcp
-$ docker-compose -f docker-compose.test.yml down
+unset $(cat .env | sed -E 's/#.*$|\=.*$//g' | xargs)
+unset FLASK_ENV
 ```
-### TODO: Remove
-Build image:
-```
-$ cd csaf_backend/
-$ docker build -f Dockerfile -t csaf_flask:0.0.1 .
-```
-Run database and backend containers:
-```
-$ docker run --name csaf_db -d \
-    -p127.0.0.1:27017:27017 \
-    --rm mongo:4.4.2
-$ docker run --name csaf_backend -d \
-    -p5000:5000 \
-    --link csaf_db:dbserver \
-    -e SECRET_KEY=CHANGE-ME \
-    -e MONGODB_HOST=dbserver \
-    --rm csaf_flask:0.0.1
-$ docker container ls
-```
-### Development Setup
-```
-$ cd csaf_backend/
-$ docker run --name csaf_db -d -p127.0.0.1:27017:27017 --rm \
-    mongo:4.4.2
-$ python3 -m venv venv
-$ source venv/bin/activate
-$ pip install wheel IPython
-$ pip install -r requirements.txt
-$ flask run --host=127.0.0.1
-```
-### OIDC
-Request an `access_token` with Keycloak:
+## How To
+### Keycloak Test User
+1. Using a web browser, access and login to the [Keycloak Administration Console](http://localhost:8080/auth/) (use your specified secrets)
+3. Select the `CSAF` realm, and go to `Manage/Users`
+4. Click `Add User`
+5. Enter a `Username` and click `Save`
+6. Switch to the `Credentials` tab, enter a `Password` and `Password Confirmation` and click `Set Password`
+### CSAF Backend API Test
+1. Simulate a Keycloak user login to receive an access token for the Backend API:
 ```
 curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-connect/token' \
         -H 'Content-Type: application/x-www-form-urlencoded' \
@@ -133,6 +100,9 @@ curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-conn
         --data-urlencode 'scope=openid' \
         --data-urlencode 'username=<USER>' \
         --data-urlencode 'password=<PASSWORD>'
+```
+2. Use the access token to query the CSAF Backend API:
+```
 curl -L -X GET 'http://<CSAF_BACKEND_IP>:5000/api/advisories' -H 'Authorization: Bearer <ACCESS_TOKEN>'
 ```
-
+Note: The access token can also be used at the (CSAF Backend API specification)[http://<CSAF_BACKEND_IP>:5000/api/specs/].
