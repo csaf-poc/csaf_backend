@@ -31,9 +31,7 @@ EOF
 ### Requirements
 Ensure that you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
 
-The development setup requires some further packages being installed:
-* python3
-* python3-venv
+The development setup further requires the packages `python3` and `python3-venv` being installed.
 ### Setup
 Start the containers either for testing or development.
 #### Testing
