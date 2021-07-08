@@ -106,3 +106,5 @@ curl -L -X POST 'http://<KEYCLOAK_IP>:8080/auth/realms/CSAF/protocol/openid-conn
 curl -L -X GET 'http://<CSAF_BACKEND_IP>:5000/api/advisories' -H 'Authorization: Bearer <ACCESS_TOKEN>'
 ```
 Note: The access token can also be used at the [CSAF Backend API specification](http://<CSAF_BACKEND_IP>:5000/api/specs/).
+## Note
+This project was developed by the [armasuisse Cyber-Defense Campus](https://www.ar.admin.ch/en/armasuisse-wissenschaft-und-technologie-w-t/cyber-defence_campus.html).
