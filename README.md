@@ -1,4 +1,7 @@
 # CSAF Backend API
+
+Based on this work, a [CSAF Content Management System](https://docs.oasis-open.org/csaf/csaf/v2.0/csaf-v2.0.html#916-conformance-clause-6-csaf-content-management-system) is developed at [Secvisogram/CSAF-CMS-Backend](https://github.com/secvisogram/csaf-cms-backend). This PoC is not longer maintained.
+
 ## Architecture
 ![Architecture](https://github.com/pdamian/csaf_backend/blob/main/Architecture_CSAF-Backend.png)
 
